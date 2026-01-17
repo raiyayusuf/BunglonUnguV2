@@ -1,0 +1,35 @@
+PHASE 1: DATA MIGRATION
+1. Convert products.js → app/lib/data/products.ts
+2. Convert categories.js → app/lib/data/categories.ts  
+3. Convert testimonials.js → app/lib/data/testimonials.ts
+4. Create types/interfaces di app/lib/types.ts
+
+PHASE 2: COMPONENTS MIGRATION
+5. Navbar.js → app/components/layout/navbar.tsx (Tailwind)
+6. Footer.js → app/components/layout/footer.tsx (Tailwind)
+7. Product-card.js → app/components/shop/product-card.tsx (Tailwind)
+
+PHASE 3: HOMEPAGE MIGRATION 
+8. home.js → app/(marketing)/page.tsx
+9. home.css → Tailwind classes dalam page.tsx
+
+PHASE 4: INTEGRATION & POLISH 
+10. Setup app/layout.tsx dengan Navbar + Footer
+11. Copy assets (images, fonts, icons)
+12. Testing & responsive fixes
+
+===========================================
+PHASE 1: Setup Structure & Components
+Layout Components (Navbar, Footer)
+UI Components (Buttons, Cards, Modals)
+Pages Structure (Home, Products, Categories, etc)
+
+PHASE 2: Migrasi Data & Logic
+Data files (products.js, categories.js, testimonials.js)
+Services (cart-service.js, product-service.js)
+Utils (helpers.js, storage.js)
+
+PHASE 3: Styling & Polish
+Tailwind classes sesuai V1
+Animations & effects
+Responsive design
