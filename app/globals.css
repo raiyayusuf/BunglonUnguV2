@@ -162,3 +162,37 @@
     grid-column: span 1;
   }
 }
+
+/* Animation pause on hover */
+.hover\:pause-animation:hover {
+  animation-play-state: paused;
+}
+
+/* Custom scroll animation untuk product slider */
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-256px * 8));
+  }
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

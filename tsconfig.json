@@ -1,3 +1,4 @@
+//tsconfig.json:
 {
   "compilerOptions": {
     "target": "ES2017",
@@ -18,8 +19,12 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"], // Root alias
+      "@components/*": ["components/*"],
+      "@lib/*": ["lib/*"],
+      "@app/*": ["app/*"]
     }
   },
   "include": [

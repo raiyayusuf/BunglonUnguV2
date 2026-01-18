@@ -33,3 +33,10 @@ PHASE 3: Styling & Polish
 Tailwind classes sesuai V1
 Animations & effects
 Responsive design
+
+
+
+installer:
+npm install 
+npm install prisma
+npm install dotenv

@@ -1,3 +1,4 @@
+// tailwind.config.ts:
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -43,11 +44,17 @@ const config: Config = {
         "pulse-slow": "pulse 3s infinite",
         "bounce-slow": "bounce 2s infinite",
         "running-slide": "runningSlide 80s linear infinite",
+        scroll: "scroll 40s linear infinite", // ✅ TAMBAH INI
       },
       keyframes: {
         runningSlide: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(calc(-280px * 16 - 2rem * 16))" },
+        },
+        scroll: {
+          // ✅ TAMBAH INI
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(calc(-256px * 8))" },
         },
       },
     },

@@ -1,133 +1,259 @@
+// app/(marketing)/page.tsx
+import FeaturedProductsSection from "@/components/sections/featured-products-section";
+import { getFeaturedProducts } from "@/lib/data/products";
+import { getRecentTestimonials } from "@/lib/data/testimonials"; // ← Import dari testimonials
+
 export default function HomePage() {
+  const featuredProducts = getFeaturedProducts();
+  const recentTestimonials = getRecentTestimonials(3); // ← Ambil 3 testimoni terbaru
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary-soft to-white">
-      {/* Hero Section */}
-      <section className="py-28 md:py-32">
-        <div className="container mx-auto px-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
+      {/* 1. Hero Section */}
+      <section className="py-20 md:py-28 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl mb-6 text-gradient-primary">
-                Keindahan dalam setiap kelopak
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-dark mb-6">
+                Keindahan dalam Setiap Kelopak
               </h1>
-              <p className="text-lg text-primary mb-8 max-w-2xl">
-                Toko Bunga modern dengan sentuhan tradisional untuk semua
-                kebutuhan spesial Anda.
+              <p className="text-lg text-gray-600 mb-8">
+                Bakule Kembang menghadirkan buket bunga segar dengan sentuhan
+                tradisional dan modern untuk setiap momen spesial Anda.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a href="/products" className="btn-primary">
-                  <i className="fas fa-store"></i>
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href="/products"
+                  className="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
                   Lihat Koleksi
                 </a>
-                <a href="/categories" className="btn-outline">
-                  <i className="fas fa-list"></i>
+                <a
+                  href="/categories"
+                  className="border-2 border-primary text-primary hover:bg-primary-soft font-semibold py-3 px-6 rounded-lg transition-colors duration-300 inline-flex items-center gap-2"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h7"
+                    />
+                  </svg>
                   Jelajahi Kategori
                 </a>
               </div>
             </div>
-
-            {/* Image/Placeholder */}
-            <div className="relative">
-              <div className="bg-gradient-to-br from-primary-light to-primary rounded-bunglon-xl h-64 md:h-80 flex items-center justify-center">
-                <div className="text-center text-white p-8">
-                  <i className="fas fa-flower text-5xl mb-4"></i>
-                  <p className="text-lg">Bunga Segar Setiap Hari</p>
-                </div>
+            <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl h-64 md:h-80 flex items-center justify-center">
+              <div className="text-center text-white p-8">
+                <div className="text-6xl mb-4 animate-pulse">🌸</div>
+                <p className="text-xl opacity-90">Bunga Segar Setiap Hari</p>
+                <p className="text-sm opacity-75 mt-2">
+                  Siap kirim ke seluruh Yogyakarta
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-10">
-          <h2 className="text-3xl font-bold text-center mb-12 text-primary-dark">
+      {/* 2. Features Section */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl font-bold text-center text-primary-dark mb-12">
             Mengapa Memilih Kami?
           </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Feature 1 */}
-            <div className="card-product p-6 text-center">
-              <div className="text-4xl mb-4">🌸</div>
-              <h3 className="text-xl font-semibold mb-2">Bunga Segar</h3>
-              <p className="text-gray-600">
-                Bunga pilihan dengan kualitas terbaik langsung dari petani
-                handal
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="card-product p-6 text-center">
-              <div className="text-4xl mb-4">🚚</div>
-              <h3 className="text-xl font-semibold mb-2">Gratis Pengiriman</h3>
-              <p className="text-gray-600">
-                Gratis ongkir untuk area Yogyakarta dengan pembelian minimal Rp
-                250.000
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="card-product p-6 text-center">
-              <div className="text-4xl mb-4">💝</div>
-              <h3 className="text-xl font-semibold mb-2">Kustomisasi</h3>
-              <p className="text-gray-600">
-                Buat buket sesuai keinginan Anda dengan bantuan florist
-                profesional
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="card-product p-6 text-center">
-              <div className="text-4xl mb-4">⭐</div>
-              <h3 className="text-xl font-semibold mb-2">Kualitas Terbaik</h3>
-              <p className="text-gray-600">
-                Garansi 100% kepuasan pelanggan dengan kualitas terbaik atau
-                uang kembali
-              </p>
-            </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: "🌸",
+                title: "Bunga Segar",
+                description:
+                  "Bunga pilihan dengan kualitas terbaik langsung dari petani handal",
+              },
+              {
+                icon: "🚚",
+                title: "Gratis Pengiriman",
+                description:
+                  "Gratis ongkir untuk area Yogyakarta dengan pembelian minimal Rp 250.000",
+              },
+              {
+                icon: "💝",
+                title: "Kustomisasi",
+                description:
+                  "Buat buket sesuai keinginan Anda dengan bantuan florist profesional",
+              },
+              {
+                icon: "⭐",
+                title: "Kualitas Terbaik",
+                description:
+                  "Garansi 100% kepuasan pelanggan dengan kualitas terbaik atau uang kembali",
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="text-4xl mb-4 text-center">{feature.icon}</div>
+                <h3 className="text-xl font-bold text-primary mb-3 text-center">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 text-center text-sm">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Test Product Card */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-10">
-          <h2 className="text-3xl font-bold text-center mb-12 text-primary-dark">
-            Contoh Product Card V2
-          </h2>
+      {/* 3. Featured Products Section (Include Grid + Running Slider) */}
+      <FeaturedProductsSection
+        products={featuredProducts}
+        title="🌺 Produk Unggulan"
+        description="Koleksi bunga pilihan terbaik kami yang selalu menjadi favorit pelanggan"
+        maxItems={8}
+        showViewAll={true}
+      />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {/* Product Card sesuai V1 style */}
-            <div className="card-product group">
-              <div className="h-48 bg-gradient-to-br from-primary-soft to-primary-light rounded-t-bunglon-xl"></div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold">Romantic Roses</h3>
-                  <span className="badge-featured">⭐ Unggulan</span>
-                </div>
-                <p className="text-gray-600 text-sm mb-4">
-                  24 Mawar merah dengan packaging eksklusif
-                </p>
+      {/* 4. Testimonials - UPDATED untuk pake data asli */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-primary-dark mb-4">
+              💬 Testimoni Pelanggan
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Lihat apa kata pelanggan yang sudah merasakan keindahan bunga dari
+              Bakule Kembang
+            </p>
+          </div>
 
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="badge-category">💐 Buket</span>
-                  <div className="flex gap-1">
-                    <span className="color-chip bg-red-500"></span>
-                    <span className="color-chip bg-pink-300"></span>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentTestimonials.map((testimonial) => (
+              <div
+                key={testimonial.id}
+                className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <div className="text-yellow-500 text-lg">
+                    {"⭐".repeat(testimonial.rating)}
                   </div>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-primary">
-                    Rp 299.000
+                  <span className="text-sm text-gray-500">
+                    {new Date(testimonial.date).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </span>
-                  <button className="btn-primary py-2 px-4 text-sm">
-                    <i className="fas fa-cart-plus"></i>+
-                  </button>
+                </div>
+                <p className="text-gray-600 italic mb-4 text-sm">
+                  "{testimonial.comment}"
+                </p>
+                <div className="font-semibold text-primary-dark">
+                  {testimonial.name}
+                  <span className="text-gray-500 font-normal ml-2">
+                    • {testimonial.role}
+                  </span>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Link ke halaman testimonials lengkap (jika ada) */}
+          {recentTestimonials.length > 0 && (
+            <div className="text-center mt-12">
+              <a
+                href="/testimonials" // atau route yang sesuai
+                className="inline-flex items-center text-primary hover:text-primary-dark font-medium gap-1"
+              >
+                Lihat lebih banyak testimoni
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </a>
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* 5. CTA */}
+      <section className="py-16 px-4 bg-gradient-to-r from-primary-dark to-primary">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Siap Memberikan Kebahagiaan?
+          </h2>
+          <p className="text-primary-soft mb-8 max-w-2xl mx-auto">
+            Pesan sekarang dan dapatkan bunga segar dengan kualitas terbaik
+            untuk orang tersayang
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/products"
+              className="bg-white text-primary-dark hover:bg-primary-soft font-semibold py-3 px-8 rounded-lg transition-colors duration-300 inline-flex items-center justify-center gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
+              Beli Sekarang
+            </a>
+            <a
+              href="/contact"
+              className="bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold py-3 px-8 rounded-lg transition-colors duration-300 inline-flex items-center justify-center gap-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              Hubungi Kami
+            </a>
           </div>
         </div>
       </section>

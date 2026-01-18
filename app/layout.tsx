@@ -1,8 +1,9 @@
+// app\layout.tsx:
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/layout/navbar";
-import Footer from "./components/layout/footer";
+import Navbar from "@components/layout/navbar";
+import Footer from "@components/layout/footer";
 
 // Load font Poppins
 const poppins = Poppins({
@@ -30,7 +31,10 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body className="font-poppins antialiased min-h-screen flex flex-col">
+      <body
+        className="font-poppins antialiased min-h-screen flex flex-col"
+        suppressHydrationWarning
+      >
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
