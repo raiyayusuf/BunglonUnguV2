@@ -15,6 +15,9 @@ export interface Product {
   filename: string;
   packaging: "bouquet" | "bunch" | "bag";
   inStock: boolean;
+  reviewCount?: number;
+  size?: string;
+  freshness?: string;
 }
 
 export const products: Product[] = [
@@ -129,7 +132,7 @@ export const products: Product[] = [
   },
   {
     id: 8,
-    filename: "gerbera-pink-bouquet-brokenwhite.jpg",
+    filename: "gerbera-pink-bouquet-brokewhite.jpg",
     name: "Gerbera Pink Buket Broken White",
     description:
       "Gerbera pink muda dengan wrapping broken white, kombinasi yang sangat feminina dan elegant.",
