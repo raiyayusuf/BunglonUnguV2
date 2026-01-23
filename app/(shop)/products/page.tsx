@@ -1,4 +1,4 @@
-// app\(shop)\products\page.tsx:
+// app/(shop)/products/page.tsx - HANYA UPDATE HEADER SECTION:
 "use client";
 
 import { useState, useMemo } from "react";
@@ -37,8 +37,8 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-12">
+      {/* ========== HEADER SECTION (HANYA GANTI WARNA) ========== */}
+      <div className="bg-gradient-to-br from-primary-dark to-primary text-white py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -56,6 +56,7 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+      {/* ========== END HEADER SECTION ========== */}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">

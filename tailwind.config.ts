@@ -10,7 +10,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // PALETTE BUNGLO UNGU V1
         "primary-dark": "#433878",
         primary: "#7e60bf",
         "primary-light": "#e4b1f0",
@@ -33,7 +32,7 @@ const config: Config = {
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
-        sans: ["Poppins", "system-ui", "sans-serif"], // Set default to Poppins
+        sans: ["Poppins", "system-ui", "sans-serif"],
       },
       borderRadius: {
         bunglon: "8px",
@@ -44,7 +43,7 @@ const config: Config = {
         "pulse-slow": "pulse 3s infinite",
         "bounce-slow": "bounce 2s infinite",
         "running-slide": "runningSlide 80s linear infinite",
-        scroll: "scroll 40s linear infinite", // ✅ TAMBAH INI
+        scroll: "scroll 40s linear infinite",
       },
       keyframes: {
         runningSlide: {
@@ -52,7 +51,6 @@ const config: Config = {
           "100%": { transform: "translateX(calc(-280px * 16 - 2rem * 16))" },
         },
         scroll: {
-          // ✅ TAMBAH INI
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(calc(-256px * 8))" },
         },
