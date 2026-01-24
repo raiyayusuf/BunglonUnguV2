@@ -1,11 +1,11 @@
-// components/ecommerce/product-card.tsx
-
+// components/ecommerce/product-card.tsx:
 "use client";
 
 import { Product } from "@/lib/data/products";
 import Image from "next/image";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { addToCart, getCart, formatPrice } from "@/lib/services/cart-service";
 
 interface ProductCardProps {
@@ -25,14 +25,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   compact = false,
   onAddToCart,
 }) => {
+  const router = useRouter();
   const [isAdded, setIsAdded] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // FIX: Gunakan useMemo untuk stable review count (tidak random per render)
+  // ========== FIX: REF untuk track click ==========
+  const isAddingRef = useRef(false);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // FIX: Gunakan useMemo untuk stable review count
   const reviewCount = useMemo(() => {
-    // Stable calculation based on product ID
-    return ((product.id * 17) % 50) + 15; // Contoh: deterministic
+    return ((product.id * 17) % 50) + 15; // Deterministic
   }, [product.id]);
 
   // Load cart quantity untuk produk ini
@@ -47,6 +51,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
     window.addEventListener("cartUpdated", loadCartData);
     return () => window.removeEventListener("cartUpdated", loadCartData);
   }, [product.id]);
+
+  // Cleanup timeout
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Color mapping untuk chips
   const getColorCode = (colorName: string): string => {
@@ -84,31 +97,59 @@ const ProductCard: React.FC<ProductCardProps> = ({
     mixed: "Campuran",
   };
 
+  // ========== FIX ULTIMATE: Single item addition dengan LOCK ==========
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!product.inStock) {
-      alert("Maaf, produk ini sedang habis stok.");
+    // PREVENT MULTIPLE CLICKS
+    if (isAddingRef.current || isAdded || !product.inStock) {
+      console.log(
+        `🛑 [ProductCard ${product.id}] Click blocked - already adding`,
+      );
       return;
     }
 
-    // Pakai service V2
-    addToCart(product, 1);
-    setIsAdded(true);
+    console.log(`🎯 [ProductCard ${product.id}] Starting add to cart process`);
 
-    // Trigger callback jika ada
-    if (onAddToCart) {
-      onAddToCart(product.id);
+    // SET LOCK
+    isAddingRef.current = true;
+
+    // Add ke cart dengan quantity 1 - HANYA 1x
+    const success = addToCart(product, 1);
+
+    if (success) {
+      console.log(`✅ [ProductCard ${product.id}] Successfully added to cart`);
+      setIsAdded(true);
+
+      // Trigger parent callback JIKA ADA (hanya untuk notification)
+      if (onAddToCart) {
+        onAddToCart(product.id);
+      }
+
+      // Reset button setelah 1.5 detik
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+
+      clickTimeoutRef.current = setTimeout(() => {
+        setIsAdded(false);
+        console.log(`🔄 [ProductCard ${product.id}] Button reset`);
+      }, 1500);
     }
 
-    // Reset button state setelah 2 detik
-    setTimeout(() => setIsAdded(false), 2000);
+    // UNLOCK setelah 500ms (prevent rapid clicks)
+    setTimeout(() => {
+      isAddingRef.current = false;
+      console.log(`🔓 [ProductCard ${product.id}] Button unlocked`);
+    }, 500);
   };
 
-  const handleViewDetail = (e: React.MouseEvent) => {
+  // ========== FIX: Quick view (eye icon) ==========
+  const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    router.push(`/products/${product.id}`);
   };
 
   if (compact) {
@@ -148,85 +189,76 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }
 
   return (
-    <Link
-      href={`/products/${product.id}`}
+    <div
       className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-100 flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Container */}
-      <div className="relative h-48 md:h-56 overflow-hidden">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+      <Link href={`/products/${product.id}`} className="block relative">
+        <div className="relative h-48 md:h-56 overflow-hidden">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {product.featured && (
-            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-              ⭐ Unggulan
-            </span>
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {product.featured && (
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                ⭐ Unggulan
+              </span>
+            )}
+            {showCategory && (
+              <span className="bg-white/90 backdrop-blur-sm text-primary-dark text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                {categoryNames[product.category] || product.category}
+              </span>
+            )}
+          </div>
+
+          {/* Stock Status */}
+          {!product.inStock && (
+            <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+              🔴 Habis
+            </div>
           )}
-          {showCategory && (
-            <span className="bg-white/90 backdrop-blur-sm text-primary-dark text-xs font-semibold px-3 py-1 rounded-full shadow-md">
-              {categoryNames[product.category] || product.category}
-            </span>
+
+          {/* ========== FIX: Quick View Button (Eye Icon) ========== */}
+          {isHovered && (
+            <button
+              onClick={handleQuickView}
+              className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm text-primary-dark rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110 hover:bg-white z-10"
+              aria-label="Lihat detail cepat"
+            >
+              <i className="fas fa-eye text-lg"></i>
+            </button>
+          )}
+
+          {/* Cart Quantity Badge */}
+          {cartQuantity > 0 && (
+            <div className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
+              {cartQuantity}
+            </div>
           )}
         </div>
-
-        {/* Stock Status */}
-        {!product.inStock && (
-          <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-            🔴 Habis
-          </div>
-        )}
-
-        {/* Quick Add to Cart Button on Hover */}
-        {isHovered && product.inStock && (
-          <button
-            onClick={handleAddToCart}
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm text-primary-dark rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:scale-110 hover:bg-white"
-            aria-label="Tambah ke keranjang"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-          </button>
-        )}
-
-        {/* Cart Quantity Badge */}
-        {cartQuantity > 0 && (
-          <div className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
-            {cartQuantity}
-          </div>
-        )}
-      </div>
+      </Link>
 
       {/* Product Info */}
       <div className="p-4 flex-1 flex flex-col">
-        <h3 className="font-bold text-gray-800 mb-2 line-clamp-1">
-          {product.name}
-        </h3>
+        <Link href={`/products/${product.id}`} className="group/link">
+          <h3 className="font-bold text-gray-800 mb-2 line-clamp-1 group-hover/link:text-primary transition-colors">
+            {product.name}
+          </h3>
 
-        {showDescription && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {product.description}
-          </p>
-        )}
+          {showDescription && (
+            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+        </Link>
 
         {/* Meta Info */}
         <div className="mb-4 space-y-2 flex-1">
@@ -283,110 +315,44 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <span className="font-semibold text-gray-700">
                 {product.rating}
               </span>
-              {/* FIXED: Gunakan reviewCount yang deterministic */}
               <span className="text-xs text-gray-500">({reviewCount})</span>
             </div>
           </div>
 
           <div className="flex gap-2">
-            <button
-              onClick={handleViewDetail}
+            <Link
+              href={`/products/${product.id}`}
               className="flex-1 bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 text-sm flex items-center justify-center gap-2"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              <i className="fas fa-info-circle"></i>
               Detail
-            </button>
+            </Link>
+
+            {/* ========== FIXED ULTIMATE: Add to Cart Button ========== */}
             <button
               onClick={handleAddToCart}
               disabled={isAdded || !product.inStock}
               className={`flex-1 py-2 px-4 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
                 isAdded
-                  ? "bg-green-500 text-white"
+                  ? "bg-green-500 text-white "
                   : !product.inStock
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : cartQuantity > 0
-                      ? "bg-primary text-white hover:bg-primary-dark"
-                      : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
+                    : "bg-primary/10 text-primary hover:bg-primary hover:text-white"
               }`}
             >
               {isAdded ? (
                 <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  Ditambahkan!
+                  <i className="fas fa-check"></i>
+                  Berhasil!
                 </>
               ) : !product.inStock ? (
                 <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <i className="fas fa-clock"></i>
                   Habis
-                </>
-              ) : cartQuantity > 0 ? (
-                <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  Dalam Keranjang ({cartQuantity})
                 </>
               ) : (
                 <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
+                  <i className="fas fa-cart-plus"></i>
                   Tambah
                 </>
               )}
@@ -394,7 +360,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

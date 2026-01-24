@@ -1,4 +1,3 @@
-// app/(shop)/products/page.tsx - HANYA UPDATE HEADER SECTION:
 "use client";
 
 import { useState, useMemo } from "react";
@@ -7,8 +6,7 @@ import FilterSidebar from "@/components/ecommerce/filter-sidebar";
 import { products } from "@/lib/data/products";
 import { useFilters } from "@/hooks/useFilters";
 import { filterProducts, sortProducts } from "@/lib/services/product-service";
-import { sortOptions } from "@/lib/data/categories";
-import { addToCart } from "@/lib/services/cart-service";
+import { sortOptions, categories, flowerTypes } from "@/lib/data/categories";
 
 export default function ProductsPage() {
   const {
@@ -27,31 +25,91 @@ export default function ProductsPage() {
     return sortProducts(filtered, sortBy);
   }, [filters, sortBy]);
 
-  // Handle add to cart
-  const handleAddToCart = (productId: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (product) {
-      addToCart(product);
+  // ========== DYNAMIC PAGE TITLE FUNCTION ==========
+  const getPageTitle = () => {
+    if (filters.category.length > 0) {
+      const categoryNames = filters.category
+        .map((id) => {
+          const cat = categories.find((c) => c.id === id);
+          return cat?.name || id;
+        })
+        .join(", ");
+      return `Produk ${categoryNames}`;
     }
+
+    if (filters.flowerType.length > 0) {
+      const flowerNames = filters.flowerType
+        .map((id) => {
+          const flower = flowerTypes.find((f) => f.id === id);
+          return flower?.name || id;
+        })
+        .join(", ");
+      return `Bunga ${flowerNames}`;
+    }
+
+    if (filters.featuredOnly) {
+      return "⭐ Produk Unggulan";
+    }
+
+    if (filters.searchKeyword) {
+      return `Hasil pencarian: "${filters.searchKeyword}"`;
+    }
+
+    if (filters.priceRange) {
+      const range = filters.priceRange;
+      if (range.max === Infinity) {
+        return `Produk di atas Rp ${range.min.toLocaleString()}`;
+      } else {
+        return `Produk Rp ${range.min.toLocaleString()} - ${range.max.toLocaleString()}`;
+      }
+    }
+
+    if (filters.colors.length > 0) {
+      return `Produk Warna ${filters.colors.join(", ")}`;
+    }
+
+    return "🌷 Koleksi Bunga Terbaik";
   };
+
+  // Dynamic description based on filters
+  const getPageDescription = () => {
+    if (filteredProducts.length === 0) {
+      return "Tidak ada produk yang sesuai dengan filter yang dipilih.";
+    }
+
+    if (
+      filters.category.length > 0 ||
+      filters.flowerType.length > 0 ||
+      filters.featuredOnly
+    ) {
+      return `Temukan ${filteredProducts.length} produk bunga segar untuk setiap momen spesial.`;
+    }
+
+    return "Temukan bunga segar untuk setiap momen spesial. Pilih dari berbagai jenis bunga dengan packaging eksklusif.";
+  };
+
+  // ========== FIX: HAPUS HANDLER INI! ==========
+  // ProductCard sudah handle sendiri, kita tidak perlu callback yang memanggil addToCart
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ========== HEADER SECTION (HANYA GANTI WARNA) ========== */}
+      {/* ========== DYNAMIC HEADER SECTION ========== */}
       <div className="bg-gradient-to-br from-primary-dark to-primary text-white py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              🌷 Koleksi Bunga Terbaik
+              {getPageTitle()}
             </h1>
-            <p className="text-lg text-white/90 mb-8">
-              Temukan bunga segar untuk setiap momen spesial. Pilih dari
-              berbagai jenis bunga dengan packaging eksklusif.
-            </p>
+            <p className="text-lg text-white/90 mb-8">{getPageDescription()}</p>
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
               <span className="text-sm font-medium">
                 {filteredProducts.length} produk tersedia
               </span>
+              {activeFilterCount > 0 && (
+                <span className="text-xs bg-white/30 px-2 py-0.5 rounded-full">
+                  {activeFilterCount} filter aktif
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -100,48 +158,38 @@ export default function ProductsPage() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-6 lg:gap-8">
-          {/* Filter Sidebar */}
-          <div
-            className={`md:w-72 lg:w-80 ${isFilterOpen ? "fixed inset-0 z-50 bg-white overflow-y-auto" : "hidden md:block"}`}
-          >
-            {isFilterOpen && (
-              <div className="p-4 h-full">
-                <div className="flex justify-between items-center mb-6 sticky top-0 bg-white pb-4 border-b">
-                  <h2 className="text-xl font-bold text-gray-800">
-                    Filter Produk
-                  </h2>
-                  <button
-                    onClick={() => setIsFilterOpen(false)}
-                    className="md:hidden text-gray-500 hover:text-gray-700"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+          {/* Filter Sidebar - STICKY WITH SCROLL */}
+          <div className="md:w-72 lg:w-80">
+            <div
+              className={`${isFilterOpen ? "fixed inset-0 z-50 bg-white overflow-y-auto scrollbar-hide" : "hidden md:block sticky top-28 h-[calc(100vh-6rem)] scrollbar-hide"}`}
+            >
+              {isFilterOpen && (
+                <div className="p-4 h-full">
+                  <div className="flex justify-between items-center mb-6 sticky top-0 bg-white pb-4 border-b">
+                    <h2 className="text-xl font-bold text-gray-800">
+                      Filter Produk
+                    </h2>
+                    <button
+                      onClick={() => setIsFilterOpen(false)}
+                      className="md:hidden text-gray-500 hover:text-gray-700"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+                      ✕
+                    </button>
+                  </div>
+                  <FilterSidebar
+                    filters={filters}
+                    onFilterChange={updateFilter}
+                    onReset={resetFilters}
+                  />
                 </div>
+              )}
+              <div className="hidden md:block h-full overflow-y-auto pr-2 scrollbar-hide">
                 <FilterSidebar
                   filters={filters}
                   onFilterChange={updateFilter}
                   onReset={resetFilters}
                 />
               </div>
-            )}
-            <div className="hidden md:block">
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={updateFilter}
-                onReset={resetFilters}
-              />
             </div>
           </div>
 
@@ -172,6 +220,105 @@ export default function ProductsPage() {
                   {/* Active Filters Badges */}
                   {activeFilterCount > 0 && (
                     <div className="hidden md:flex flex-wrap gap-2">
+                      {/* Category badges */}
+                      {filters.category.map((catId) => {
+                        const cat = categories.find((c) => c.id === catId);
+                        if (!cat) return null;
+                        return (
+                          <span
+                            key={catId}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                          >
+                            {cat.icon} {cat.name}
+                            <button
+                              onClick={() =>
+                                updateFilter(
+                                  "category",
+                                  filters.category.filter((id) => id !== catId),
+                                )
+                              }
+                              className="ml-1 text-primary hover:text-primary-dark"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+
+                      {/* Flower type badges */}
+                      {filters.flowerType.map((flowerId) => {
+                        const flower = flowerTypes.find(
+                          (f) => f.id === flowerId,
+                        );
+                        if (!flower) return null;
+                        return (
+                          <span
+                            key={flowerId}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium"
+                          >
+                            {flower.icon} {flower.name}
+                            <button
+                              onClick={() =>
+                                updateFilter(
+                                  "flowerType",
+                                  filters.flowerType.filter(
+                                    (id) => id !== flowerId,
+                                  ),
+                                )
+                              }
+                              className="ml-1 text-emerald-700 hover:text-emerald-900"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+
+                      {/* Price range badge */}
+                      {filters.priceRange && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+                          <i className="fas fa-tag"></i>
+                          Rp {filters.priceRange.min.toLocaleString()} -{" "}
+                          {filters.priceRange.max === Infinity
+                            ? "∞"
+                            : filters.priceRange.max.toLocaleString()}
+                          <button
+                            onClick={() => updateFilter("priceRange", null)}
+                            className="ml-1 text-orange-700 hover:text-orange-900"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
+
+                      {/* Search keyword badge */}
+                      {filters.searchKeyword && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                          <i className="fas fa-search"></i>"
+                          {filters.searchKeyword}"
+                          <button
+                            onClick={() => updateFilter("searchKeyword", "")}
+                            className="ml-1 text-blue-700 hover:text-blue-900"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
+
+                      {/* Featured badge */}
+                      {filters.featuredOnly && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+                          <i className="fas fa-star"></i> Unggulan
+                          <button
+                            onClick={() => updateFilter("featuredOnly", false)}
+                            className="ml-1 text-yellow-700 hover:text-yellow-900"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      )}
+
+                      {/* Clear all button */}
                       <button
                         onClick={resetFilters}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium transition-colors"
@@ -196,19 +343,48 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 relative group">
                   <span className="text-gray-600 font-medium">Urutkan:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => updateSort(e.target.value as any)}
-                    className="border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-700 font-medium min-w-[180px]"
-                  >
-                    {sortOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    {/* Trigger Button */}
+                    <button className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 font-medium min-w-[180px] text-left flex items-center justify-between hover:border-primary hover:shadow-md transition-all duration-200 group-hover:border-primary">
+                      <span>
+                        {sortOptions.find((opt) => opt.id === sortBy)?.name ||
+                          "Unggulan"}
+                      </span>
+                      <svg
+                        className="w-4 h-4 text-gray-500 group-hover:text-primary transition-transform duration-300 group-hover:rotate-180"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden opacity-0 invisible scale-95 group-hover:opacity-100 group-hover:visible group-hover:scale-100 transition-all duration-300 origin-top z-50">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          onClick={() => updateSort(option.id as any)}
+                          className={`w-full px-4 py-3 text-left transition-all duration-200 hover:bg-primary/10 ${sortBy === option.id ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary" : "text-gray-700 hover:pl-6"}`}
+                        >
+                          <div className="flex items-center">
+                            {sortBy === option.id && (
+                              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                            )}
+                            {option.name}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -268,7 +444,8 @@ export default function ProductsPage() {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={handleAddToCart}
+                      // ========== FIX: HAPUS onAddToCart atau buat kosong ==========
+                      // onAddToCart={undefined}
                     />
                   ))}
                 </div>
@@ -279,6 +456,9 @@ export default function ProductsPage() {
                     Menampilkan semua {filteredProducts.length} produk
                     {activeFilterCount > 0 &&
                       " berdasarkan filter yang dipilih"}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Halaman 1 dari 1 • Total {filteredProducts.length} produk
                   </p>
                 </div>
               </>
@@ -321,6 +501,14 @@ export default function ProductsPage() {
           >
             Reset
           </button>
+
+          {/* Quick cart info */}
+          <div className="flex items-center gap-2">
+            <i className="fas fa-shopping-cart text-primary"></i>
+            <span className="text-sm font-medium">
+              {filteredProducts.length} produk
+            </span>
+          </div>
         </div>
       </div>
     </div>

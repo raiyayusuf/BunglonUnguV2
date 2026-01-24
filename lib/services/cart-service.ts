@@ -1,4 +1,4 @@
-// lib\services\cart-service.ts:
+// lib/services/cart-service.ts:
 import { Product } from "@/lib/data/products";
 
 // ===== TYPES =====
@@ -13,14 +13,8 @@ export interface CartItem {
   addedAt: Date;
 }
 
-export interface SelectedItems {
-  productId: number;
-  quantity: number;
-}
-
 // ===== CONSTANTS =====
 const CART_STORAGE_KEY = "bakule_kembang_cart_v2";
-const SELECTED_ITEMS_KEY = "bakule_kembang_selected_items";
 
 // ===== UTILITIES =====
 function getCartFromStorage(): CartItem[] {
@@ -30,7 +24,6 @@ function getCartFromStorage(): CartItem[] {
     const saved = localStorage.getItem(CART_STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Convert string dates back to Date objects
       return parsed.map((item: any) => ({
         ...item,
         addedAt: new Date(item.addedAt),
@@ -53,24 +46,17 @@ function saveCartToStorage(cart: CartItem[]): void {
   }
 }
 
-function updateCartUI(): void {
-  const cart = getCartFromStorage();
-  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+// ===== FIX: Better event dispatch =====
+let updateTimeout: NodeJS.Timeout | null = null;
 
-  // Dispatch custom event untuk update UI di komponen lain
-  window.dispatchEvent(
-    new CustomEvent("cartUpdated", {
-      detail: {
-        items: cart,
-        total: totalPrice,
-        count: totalCount,
-      },
-    }),
-  );
+function updateCartUI(): void {
+  if (updateTimeout) {
+    clearTimeout(updateTimeout);
+  }
+
+  updateTimeout = setTimeout(() => {
+    window.dispatchEvent(new CustomEvent("cartUpdated"));
+  }, 50);
 }
 
 // ===== CORE CART FUNCTIONS =====
@@ -80,16 +66,16 @@ export function addToCart(product: Product, quantity: number = 1): boolean {
   );
 
   const cart = getCartFromStorage();
-  const existingItem = cart.find((item) => item.id === product.id);
+  const existingItemIndex = cart.findIndex((item) => item.id === product.id);
 
-  if (existingItem) {
-    console.log(
-      `📈 Updating quantity from ${existingItem.quantity} to ${existingItem.quantity + quantity}`,
-    );
-    existingItem.quantity += quantity;
-    existingItem.addedAt = new Date(); // Update timestamp
+  // ========== FIX: Prevent duplicate addition ==========
+  if (existingItemIndex >= 0) {
+    // Update existing item
+    cart[existingItemIndex].quantity += quantity;
+    cart[existingItemIndex].addedAt = new Date();
+    console.log(`📈 Updated quantity to: ${cart[existingItemIndex].quantity}`);
   } else {
-    console.log(`🆕 Adding new item: ${product.name}`);
+    // Add new item - FIX: Add only once
     cart.push({
       id: product.id,
       name: product.name,
@@ -100,13 +86,11 @@ export function addToCart(product: Product, quantity: number = 1): boolean {
       flowerType: product.flowerType,
       addedAt: new Date(),
     });
+    console.log(`🆕 Added new item: ${product.name}`);
   }
 
   saveCartToStorage(cart);
-  console.log(`💾 Cart saved. Total items: ${cart.length}`);
-
-  // Debounce UI update
-  setTimeout(() => updateCartUI(), 10);
+  updateCartUI();
   return true;
 }
 
@@ -117,7 +101,7 @@ export function removeFromCart(productId: number): boolean {
 
   if (newCart.length < initialLength) {
     saveCartToStorage(newCart);
-    setTimeout(() => updateCartUI(), 10);
+    updateCartUI();
     return true;
   }
   return false;
@@ -138,7 +122,7 @@ export function updateQuantity(
     item.quantity = newQuantity;
     item.addedAt = new Date();
     saveCartToStorage(cart);
-    setTimeout(() => updateCartUI(), 10);
+    updateCartUI();
     return true;
   }
   return false;
@@ -146,10 +130,7 @@ export function updateQuantity(
 
 export function clearCart(): boolean {
   saveCartToStorage([]);
-  if (typeof window !== "undefined") {
-    localStorage.removeItem(SELECTED_ITEMS_KEY);
-  }
-  setTimeout(() => updateCartUI(), 10);
+  updateCartUI();
   return true;
 }
 
@@ -187,125 +168,10 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
-// ===== BULK OPERATIONS =====
-export function removeMultipleFromCart(productIds: number[]): boolean {
-  const cart = getCartFromStorage();
-  const initialLength = cart.length;
-  const newCart = cart.filter((item) => !productIds.includes(item.id));
-
-  if (newCart.length < initialLength) {
-    saveCartToStorage(newCart);
-    setTimeout(() => updateCartUI(), 10);
-    return true;
-  }
-  return false;
-}
-
-export function getSelectedItemsTotal(selectedIds: number[]): number {
-  const cart = getCartFromStorage();
-  return cart
-    .filter((item) => selectedIds.includes(item.id))
-    .reduce((total, item) => total + item.price * item.quantity, 0);
-}
-
-export function getCartItemsByIds(ids: number[]): CartItem[] {
-  const cart = getCartFromStorage();
-  return cart.filter((item) => ids.includes(item.id));
-}
-
-// ===== SELECTED ITEMS (for bulk checkout) =====
-export function getSelectedCartItems(): CartItem[] {
-  const cart = getCartFromStorage();
-
-  if (typeof window === "undefined") return cart;
-
-  try {
-    const selectedIds = JSON.parse(
-      localStorage.getItem(SELECTED_ITEMS_KEY) || "[]",
-    ) as number[];
-
-    if (selectedIds.length === 0) {
-      // If no selected items, return all cart items (normal checkout)
-      return cart;
-    }
-
-    // Filter cart to only selected items
-    return cart.filter((item) => selectedIds.includes(item.id));
-  } catch (error) {
-    console.error("Error getting selected cart items:", error);
-    return cart;
-  }
-}
-
-export function getSelectedCartTotal(): number {
-  const selectedItems = getSelectedCartItems();
-  return selectedItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
-}
-
-export function saveSelectedItems(selectedIds: number[]): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(SELECTED_ITEMS_KEY, JSON.stringify(selectedIds));
-  } catch (error) {
-    console.error("Error saving selected items:", error);
-  }
-}
-
-export function clearSelectedItems(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(SELECTED_ITEMS_KEY);
-}
-
-// ===== PRODUCT DETAILS HELPERS =====
-export function getProductDetailsFromCart(): Array<
-  CartItem & { subtotal: number }
-> {
-  const cart = getCartFromStorage();
-  return cart.map((item) => ({
-    ...item,
-    subtotal: item.price * item.quantity,
-  }));
-}
-
-// ===== INITIAL CART UI UPDATE =====
-// Update cart UI on initial load
+// ===== INITIAL SETUP =====
 if (typeof window !== "undefined") {
-  // Small delay to ensure DOM is ready
+  // Initialize cart on load
   setTimeout(() => {
     updateCartUI();
   }, 100);
-
-  // Listen for storage changes from other tabs
-  window.addEventListener("storage", (event) => {
-    if (event.key === CART_STORAGE_KEY) {
-      updateCartUI();
-    }
-  });
 }
-
-// ===== EXPORT FOR BACKWARDS COMPATIBILITY =====
-// Export semua fungsi yang mungkin dipanggil dari V1
-export default {
-  addToCart,
-  removeFromCart,
-  updateQuantity,
-  clearCart,
-  getCart,
-  getCartItem,
-  getCartTotal,
-  getCartCount,
-  isInCart,
-  formatPrice,
-  removeMultipleFromCart,
-  getSelectedItemsTotal,
-  getCartItemsByIds,
-  getSelectedCartItems,
-  getSelectedCartTotal,
-  saveSelectedItems,
-  clearSelectedItems,
-  getProductDetailsFromCart,
-};

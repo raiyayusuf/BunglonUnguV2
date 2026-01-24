@@ -116,17 +116,17 @@ export const tags = (() => {
 export const featuredFilter = {
   id: "featured",
   name: "Produk Unggulan",
-  icon: "🌟",
+  icon: "",
   count: products.filter((p) => p.featured).length,
 };
 
 export const sortOptions = [
-  { id: "price-asc", name: "Harga Terendah", icon: "⬆️" },
-  { id: "price-desc", name: "Harga Tertinggi", icon: "⬇️" },
-  { id: "rating-desc", name: "Rating Tertinggi", icon: "⬇️" },
-  { id: "name-asc", name: "Nama A-Z", icon: "🔤" },
-  { id: "name-desc", name: "Nama Z-A", icon: "🔤" },
-  { id: "featured", name: "Unggulan", icon: "🌟" },
+  { id: "price-asc", name: "Harga Terendah", icon: "⬆" },
+  { id: "price-desc", name: "Harga Tertinggi", icon: "⬇" },
+  { id: "rating-desc", name: "Rating Tertinggi", icon: "⬇" },
+  { id: "name-asc", name: "Nama A-Z", icon: "" },
+  { id: "name-desc", name: "Nama Z-A", icon: "" },
+  { id: "featured", name: "Unggulan", icon: "" },
 ];
 
 export const priceStats = {
