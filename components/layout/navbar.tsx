@@ -1,4 +1,5 @@
-// components\layout\navbar.tsx:
+// components/layout/navbar.tsx
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -6,10 +7,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-export default function Navbar() {
+// PROPS INTERFACE HARUS ADA!
+interface NavbarProps {
+  cartCount: number;
+  onCartClick: () => void;
+}
+
+export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const [mobileRotation, setMobileRotation] = useState(0);
   const pathname = usePathname();
 
@@ -24,23 +30,6 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Load cart count
-  useEffect(() => {
-    const loadCartCount = () => {
-      const cart = JSON.parse(
-        localStorage.getItem("bakule_kembang_cart_v1") || "[]",
-      );
-      const totalItems = cart.reduce(
-        (sum: number, item: any) => sum + item.quantity,
-        0,
-      );
-      setCartCount(totalItems);
-    };
-    loadCartCount();
-    window.addEventListener("cartUpdated", loadCartCount);
-    return () => window.removeEventListener("cartUpdated", loadCartCount);
   }, []);
 
   // Click outside handler untuk mobile menu
@@ -61,17 +50,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // Handle mobile hamburger click dengan continuous rotation
+  // Handle mobile hamburger click
   const handleMobileHamburgerClick = () => {
     const newState = !isMobileMenuOpen;
     setIsMobileMenuOpen(newState);
-    // Tambah 90° setiap klik
     setMobileRotation((prev) => prev + 90);
-  };
-
-  const toggleCartSidebar = () => {
-    console.log("🛒 Cart button clicked");
-    // TODO: Implement cart sidebar
   };
 
   const navLinks = [
@@ -185,16 +168,18 @@ export default function Navbar() {
 
         {/* Cart & Actions */}
         <div className="flex items-center gap-3">
-          {/* Cart Button */}
+          {/* Cart Button - PAKAI PROPS onCartClick */}
           <button
-            className="bg-gradient-to-br from-primary-light to-primary text-primary-dark border-none px-4 py-2.5 rounded-bunglon font-semibold cursor-pointer flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl active:scale-95"
-            onClick={toggleCartSidebar}
+            className="bg-gradient-to-br from-primary-light to-primary text-primary-dark border-none px-4 py-2.5 rounded-bunglon font-semibold cursor-pointer flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl active:scale-95 relative"
+            onClick={onCartClick} // ← INI PAKAI PROPS!
             aria-label="Open cart"
           >
             <i className="fas fa-shopping-cart"></i>
             <span className="hidden md:inline">Cart</span>
+
+            {/* Cart Count Badge - PAKAI PROPS cartCount */}
             {cartCount > 0 && (
-              <span className="bg-primary-dark text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md animate-pulse">
+              <span className="absolute -top-2 -right-2 bg-primary-dark text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md animate-pulse">
                 {cartCount}
               </span>
             )}
