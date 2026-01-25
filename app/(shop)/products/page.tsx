@@ -468,7 +468,7 @@ export default function ProductsPage() {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-                /* PAGINATION INFO */
+                {/* PAGINATION INFO */}
                 <div className="mt-12 pt-8 border-t border-gray-200 text-center">
                   <p className="text-gray-600">
                     Menampilkan semua {filteredProducts.length} produk

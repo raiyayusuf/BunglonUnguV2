@@ -33,9 +33,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
      STATE MANAGEMENT
      ============================================ */
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   /* ============================================
      UTILITY FUNCTIONS
@@ -60,101 +58,39 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   /* ============================================
-     HOVER HANDLERS
+     CLICK HANDLERS
      ============================================ */
 
-  // Handle hover with delay
-  const handleMouseEnter = (section: string) => {
-    if (hoverTimeout) clearTimeout(hoverTimeout);
-
-    // Immediate feedback for arrow
-    if (expandedSection !== section) {
-      const arrowElement = document.querySelector(
-        `[data-section="${section}"] svg`,
-      );
-      if (arrowElement) {
-        arrowElement.classList.add("rotate-180");
-      }
-    }
-
-    const timeout = setTimeout(() => {
-      setExpandedSection(section);
-    }, 120);
-
-    setHoverTimeout(timeout);
-  };
-
-  const handleMouseLeave = (section: string) => {
-    if (hoverTimeout) clearTimeout(hoverTimeout);
-
-    const timeout = setTimeout(() => {
-      const sectionElement = sectionRefs.current[section];
-      if (sectionElement) {
-        const isHovering = sectionElement.matches(":hover");
-        if (!isHovering) {
-          // Animate arrow back
-          const arrowElement = document.querySelector(
-            `[data-section="${section}"] svg`,
-          );
-          if (arrowElement) {
-            arrowElement.classList.remove("rotate-180");
-          }
-
-          // Add exit animation class before remove
-          const dropdownElement =
-            sectionElement.querySelector(".filter-content");
-          if (dropdownElement) {
-            dropdownElement.classList.add("filter-dropdown-exit");
-            setTimeout(() => {
-              setExpandedSection(null);
-            }, 500);
-          } else {
-            setExpandedSection(null);
-          }
-        }
-      }
-    }, 100);
-
-    setHoverTimeout(timeout);
-  };
-
-  // Handle click for manual toggle (mobile/fallback)
+  // Handle section click
   const handleSectionClick = (section: string) => {
-    if (window.innerWidth < 768) {
-      setExpandedSection(expandedSection === section ? null : section);
+    if (expandedSection === section) {
+      setExpandedSection(null);
+    } else {
+      setExpandedSection(section);
     }
   };
 
-  /* ============================================
-     EFFECTS
-     ============================================ */
-
-  // Close all when Reset
+  // Close dropdown when clicking outside
   useEffect(() => {
-    if (
-      filters.category.length === 0 &&
-      filters.flowerType.length === 0 &&
-      !filters.priceRange &&
-      filters.colors.length === 0 &&
-      !filters.featuredOnly &&
-      !filters.inStockOnly
-    ) {
-      setExpandedSection(null);
-    }
-  }, [filters]);
-
-  // Cleanup timeout
-  useEffect(() => {
-    return () => {
-      if (hoverTimeout) clearTimeout(hoverTimeout);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setExpandedSection(null);
+      }
     };
-  }, [hoverTimeout]);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   /* ============================================
      COUNT FUNCTIONS
      ============================================ */
 
-  // Calculate total items per section
   const getCategoryCount = () => {
     return categories.filter((cat) => filters.category.includes(cat.id)).length;
   };
@@ -174,19 +110,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   /* ============================================
-     REF SETTER
-     ============================================ */
-
-  // Set ref for each section
-  const setSectionRef = (section: string, el: HTMLDivElement | null) => {
-    sectionRefs.current[section] = el;
-  };
-
-  /* ============================================
      RENDER COMPONENT
      ============================================ */
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
+    <div
+      ref={sidebarRef}
+      className="bg-white rounded-xl shadow-lg p-6 space-y-4"
+    >
       {/* HEADER */}
       <div className="flex justify-between items-center border-b pb-4 mb-4">
         <h2 className="text-xl font-bold text-gray-800">Filter Produk</h2>
@@ -226,16 +156,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* ============================================
-          CATEGORY SECTION - HOVER ACCORDION
+          CATEGORY SECTION - CLICK ACCORDION
           ============================================ */}
-      <div
-        ref={(el) => setSectionRef("category", el)}
-        className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors"
-        onMouseEnter={() => handleMouseEnter("category")}
-        onMouseLeave={() => handleMouseLeave("category")}
-        onClick={() => handleSectionClick("category")}
-      >
-        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+      <div className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
+        <div
+          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => handleSectionClick("category")}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <svg
@@ -286,10 +213,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         {expandedSection === "category" && (
-          <div
-            className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50 filter-dropdown-enter smooth-dropdown"
-            onAnimationEnd={(e) => e.stopPropagation()}
-          >
+          <div className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50">
             <div className="space-y-2 pt-3">
               {categories.map((cat) => (
                 <label
@@ -313,13 +237,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                           );
                         }
                       }}
-                      className="w-4 h-4 text-primary rounded focus:ring-primary group-hover:scale-110 transition-transform"
+                      className="custom-checkbox"
                     />
                     <span className="text-sm text-gray-700 group-hover:text-primary">
                       {cat.name}
                     </span>
                   </div>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-primary/10 group-hover:text-primary">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                     {cat.count}
                   </span>
                 </label>
@@ -330,20 +254,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* ============================================
-          FLOWER TYPE SECTION - HOVER ACCORDION
+          FLOWER TYPE SECTION - CLICK ACCORDION
           ============================================ */}
-      <div
-        ref={(el) => setSectionRef("flower-type", el)}
-        className="border border-gray-200 rounded-lg overflow-hidden hover:border-emerald-500/50 transition-colors"
-        onMouseEnter={() => handleMouseEnter("flower-type")}
-        onMouseLeave={() => handleMouseLeave("flower-type")}
-        onClick={() => handleSectionClick("flower-type")}
-      >
-        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+      <div className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
+        <div
+          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => handleSectionClick("flower-type")}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-emerald-600"
+                className="w-5 h-5 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -367,7 +288,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
           <div className="flex items-center gap-2">
             {getFlowerTypeCount() > 0 && (
-              <span className="bg-emerald-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              <span className="bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
                 {getFlowerTypeCount()}
               </span>
             )}
@@ -390,10 +311,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         {expandedSection === "flower-type" && (
-          <div
-            className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50 filter-dropdown-enter smooth-dropdown"
-            onAnimationEnd={(e) => e.stopPropagation()}
-          >
+          <div className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50">
             <div className="space-y-2 pt-3">
               {flowerTypes.map((flower) => (
                 <label
@@ -417,13 +335,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                           );
                         }
                       }}
-                      className="w-4 h-4 text-primary rounded focus:ring-primary group-hover:scale-110 transition-transform"
+                      className="custom-checkbox"
                     />
-                    <span className="text-sm text-gray-700 group-hover:text-emerald-600">
+                    <span className="text-sm text-gray-700 group-hover:text-primary">
                       {flower.name}
                     </span>
                   </div>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-emerald-100 group-hover:text-emerald-700">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                     {flower.count}
                   </span>
                 </label>
@@ -434,20 +352,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* ============================================
-          PRICE SECTION - HOVER ACCORDION
+          PRICE SECTION - CLICK ACCORDION
           ============================================ */}
-      <div
-        ref={(el) => setSectionRef("price", el)}
-        className="border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
-        onMouseEnter={() => handleMouseEnter("price")}
-        onMouseLeave={() => handleMouseLeave("price")}
-        onClick={() => handleSectionClick("price")}
-      >
-        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+      <div className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
+        <div
+          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => handleSectionClick("price")}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-orange-600"
+                className="w-5 h-5 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -461,7 +376,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               </svg>
             </div>
             <div className="text-left">
-              <div className="font-semibold text-gray-800">Rentang Harga</div>
+              <div className="font-semibold text-gray-800">Harga</div>
               <div className="text-sm text-gray-500">
                 {getPriceRangeCount() > 0
                   ? "1 terpilih"
@@ -471,7 +386,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
           <div className="flex items-center gap-2">
             {getPriceRangeCount() > 0 && (
-              <span className="bg-orange-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              <span className="bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
                 {getPriceRangeCount()}
               </span>
             )}
@@ -494,10 +409,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         {expandedSection === "price" && (
-          <div
-            className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50 filter-dropdown-enter smooth-dropdown"
-            onAnimationEnd={(e) => e.stopPropagation()}
-          >
+          <div className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50">
             <div className="space-y-2 pt-3">
               {priceRanges.map((range) => (
                 <label
@@ -518,13 +430,13 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                           max: range.max,
                         })
                       }
-                      className="w-4 h-4 text-primary group-hover:scale-110 transition-transform"
+                      className="custom-checkbox"
                     />
-                    <span className="text-sm text-gray-700 group-hover:text-orange-600">
+                    <span className="text-sm text-gray-700 group-hover:text-primary">
                       {range.name}
                     </span>
                   </div>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full group-hover:bg-orange-100 group-hover:text-orange-700">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                     {range.count}
                   </span>
                 </label>
@@ -535,20 +447,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       </div>
 
       {/* ============================================
-          COLOR SECTION - HOVER ACCORDION
+          COLOR SECTION - CLICK ACCORDION
           ============================================ */}
-      <div
-        ref={(el) => setSectionRef("color", el)}
-        className="border border-gray-200 rounded-lg overflow-hidden hover:border-purple-500/50 transition-colors"
-        onMouseEnter={() => handleMouseEnter("color")}
-        onMouseLeave={() => handleMouseLeave("color")}
-        onClick={() => handleSectionClick("color")}
-      >
-        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+      <div className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
+        <div
+          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => handleSectionClick("color")}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-purple-600"
+                className="w-5 h-5 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -572,7 +481,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
           <div className="flex items-center gap-2">
             {getColorCount() > 0 && (
-              <span className="bg-purple-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              <span className="bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
                 {getColorCount()}
               </span>
             )}
@@ -595,10 +504,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         {expandedSection === "color" && (
-          <div
-            className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50 filter-dropdown-enter smooth-dropdown"
-            onAnimationEnd={(e) => e.stopPropagation()}
-          >
+          <div className="px-4 pb-4 border-t border-gray-200 bg-gray-50/50">
             <div className="space-y-3 pt-3">
               <div className="flex flex-wrap gap-2">
                 {colorData.map((color) => (
@@ -617,7 +523,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                         ]);
                       }
                     }}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 relative hover:scale-110 ${
+                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
                       filters.colors.includes(color.name)
                         ? "border-primary ring-2 ring-primary/30 scale-110"
                         : "border-white"
@@ -658,15 +564,15 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* ============================================
           FEATURED & IN STOCK SECTION
           ============================================ */}
-      <div className="border border-gray-200 rounded-lg p-4 space-y-3 hover:border-gray-300 transition-colors">
+      <div className="border border-gray-200 rounded-lg p-4 space-y-3 hover:border-primary/30 transition-colors">
         <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group">
           <input
             type="checkbox"
             checked={filters.featuredOnly}
             onChange={(e) => onFilterChange("featuredOnly", e.target.checked)}
-            className="w-5 h-5 text-primary rounded focus:ring-primary group-hover:scale-110 transition-transform"
+            className="custom-checkbox"
           />
-          <span className="text-gray-700 group-hover:text-yellow-600">
+          <span className="text-gray-700 group-hover:text-primary">
             ⭐ Produk Unggulan
           </span>
         </label>
@@ -676,9 +582,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             type="checkbox"
             checked={filters.inStockOnly}
             onChange={(e) => onFilterChange("inStockOnly", e.target.checked)}
-            className="w-5 h-5 text-primary rounded focus:ring-primary group-hover:scale-110 transition-transform"
+            className="custom-checkbox"
           />
-          <span className="text-gray-700 group-hover:text-blue-600">
+          <span className="text-gray-700 group-hover:text-primary">
             📦 Stok Tersedia
           </span>
         </label>
@@ -693,41 +599,41 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         getColorCount() > 0 ||
         filters.featuredOnly ||
         filters.inStockOnly) && (
-        <div className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors">
+        <div className="border border-gray-200 rounded-lg p-4 hover:border-primary/30 transition-colors">
           <div className="text-sm font-medium text-gray-700 mb-2">
             Filter Aktif:
           </div>
           <div className="flex flex-wrap gap-2">
             {getCategoryCount() > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors">
+              <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 <span>Kategori:</span>
                 <span className="font-bold">{getCategoryCount()}</span>
               </span>
             )}
             {getFlowerTypeCount() > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full hover:bg-emerald-200 transition-colors">
+              <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 <span>Jenis:</span>
                 <span className="font-bold">{getFlowerTypeCount()}</span>
               </span>
             )}
             {getPriceRangeCount() > 0 && (
-              <span className="text-xs bg-orange-100 text-orange-700 px-3 py-1.5 rounded-full hover:bg-orange-200 transition-colors">
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 Harga terpilih
               </span>
             )}
             {getColorCount() > 0 && (
-              <span className="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-200 transition-colors">
+              <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 <span>Warna:</span>
                 <span className="font-bold">{getColorCount()}</span>
               </span>
             )}
             {filters.featuredOnly && (
-              <span className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-full hover:bg-yellow-200 transition-colors">
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 Unggulan
               </span>
             )}
             {filters.inStockOnly && (
-              <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-200 transition-colors">
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                 Stok tersedia
               </span>
             )}
