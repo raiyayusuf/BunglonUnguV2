@@ -1,5 +1,5 @@
 /* 
-  lib\types\filter.ts - Filter Type Definitions
+  lib\types\filter.ts
   Organized by: raiyayusuf
 */
 
