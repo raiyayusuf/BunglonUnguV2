@@ -249,7 +249,7 @@ export default function CategoriesPage() {
      ============================================ */
   return (
     <div className="py-8">
-      /* HERO SECTION */
+      {/* HERO SECTION */}
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary-light/10 px-6 py-2 rounded-full mb-4">
           <i className="fas fa-tags text-primary"></i>
@@ -284,7 +284,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-      /* QUICK LINKS SECTION */
+      {/* QUICK LINKS SECTION */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
         <div
           onClick={handleAllProductsClick}
@@ -322,7 +322,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-      /* PACKAGING CATEGORIES SECTION */
+      {/* PACKAGING CATEGORIES SECTION */}
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -349,7 +349,7 @@ export default function CategoriesPage() {
           })}
         </div>
       </div>
-      /* FLOWER TYPES SECTION */
+      {/* FLOWER TYPES SECTION */}
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -382,7 +382,7 @@ export default function CategoriesPage() {
           })}
         </div>
       </div>
-      /* PRICE RANGES SECTION */
+      {/* PRICE RANGES SECTION */}
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -440,11 +440,11 @@ export default function CategoriesPage() {
           ))}
         </div>
       </div>
-      /* COLOR TAGS SECTION */
+      {/* COLOR TAGS SECTION */}
       <ColorTags />
-      /* FEATURED PRODUCTS SECTION */
+      {/* FEATURED PRODUCTS SECTION */}
       <FeaturedProducts />
-      /* POPULAR TAGS SECTION */
+      {/* POPULAR TAGS SECTION */}
       <div className="mb-16">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
           <i className="fas fa-hashtag text-primary"></i>
@@ -463,7 +463,7 @@ export default function CategoriesPage() {
           ))}
         </div>
       </div>
-      /* CTA SECTION */
+      {/* CTA SECTION */}
       <div className="bg-gradient-to-r from-primary to-primary-dark rounded-3xl p-8 md:p-12 text-white text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Butuh Bantuan Memilih?</h2>

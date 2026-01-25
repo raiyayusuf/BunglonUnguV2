@@ -213,7 +213,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
         {/* CONTENT AREA */}
         <div className="flex-1 overflow-y-auto p-4">
           {cartItems.length === 0 ? (
-            /* EMPTY CART STATE */
             <div className="h-full flex flex-col items-center justify-center text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                 <svg

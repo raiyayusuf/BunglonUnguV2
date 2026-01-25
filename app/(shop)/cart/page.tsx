@@ -148,7 +148,7 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        /* BREADCRUMB NAVIGATION */
+        {/* BREADCRUMB NAVIGATION */}
         <nav className="mb-8">
           <ol className="flex items-center text-sm text-gray-600">
             <li>
@@ -169,7 +169,7 @@ export default function CartPage() {
             <li className="font-medium text-gray-800">Keranjang</li>
           </ol>
         </nav>
-        /* PAGE HEADER */
+        {/* PAGE HEADER */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Keranjang Belanja
@@ -179,7 +179,6 @@ export default function CartPage() {
           </p>
         </div>
         {cartItems.length === 0 ? (
-          /* EMPTY CART STATE */
           <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -223,9 +222,9 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            /* LEFT COLUMN - CART ITEMS */
+            {/* LEFT COLUMN - CART ITEMS */}
             <div className="lg:col-span-2">
-              /* CART HEADER */
+              {/* CART HEADER */}
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -265,7 +264,7 @@ export default function CartPage() {
                   </button>
                 </div>
               </div>
-              /* CART ITEMS LIST */
+              {/* CART ITEMS LIST */}
               <div className="space-y-4">
                 {cartItems.map((item) => (
                   <div
@@ -273,7 +272,7 @@ export default function CartPage() {
                     className="bg-white rounded-2xl shadow-lg p-6"
                   >
                     <div className="flex flex-col sm:flex-row gap-6">
-                      /* SELECTION CHECKBOX */
+                      {/* SELECTION CHECKBOX */}
                       <div className="flex items-start">
                         <input
                           type="checkbox"
@@ -282,7 +281,7 @@ export default function CartPage() {
                           className="w-5 h-5 text-primary rounded focus:ring-primary mt-1"
                         />
                       </div>
-                      /* PRODUCT IMAGE */
+                      {/* PRODUCT IMAGE */}
                       <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
                         <Image
                           src={item.image}
@@ -292,7 +291,7 @@ export default function CartPage() {
                           sizes="96px"
                         />
                       </div>
-                      /* PRODUCT INFO */
+                      {/* PRODUCT INFO */}
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                           <div className="flex-1">
@@ -312,7 +311,7 @@ export default function CartPage() {
                               </span>
                             </div>
                           </div>
-                          /* QUANTITY CONTROLS */
+                          {/* QUANTITY CONTROLS */}
                           <div className="flex flex-col items-end gap-4">
                             <div className="flex items-center gap-2">
                               <button
@@ -375,7 +374,7 @@ export default function CartPage() {
                             </div>
                           </div>
                         </div>
-                        /* ACTIONS */
+                        {/* ACTIONS */}
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                           <button
                             onClick={() => handleRemoveItem(item.id)}
@@ -428,10 +427,10 @@ export default function CartPage() {
                 ))}
               </div>
             </div>
-            /* RIGHT COLUMN - SUMMARY */
+            {/* RIGHT COLUMN - SUMMARY */}
             <div className="lg:col-span-1">
               <div className="sticky top-8">
-                /* ORDER SUMMARY */
+                {/* ORDER SUMMARY */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
                   <h2 className="text-xl font-bold text-gray-800 mb-6">
                     Ringkasan Pesanan
@@ -542,7 +541,7 @@ export default function CartPage() {
                     </p>
                   </div>
                 </div>
-                /* PROMO BANNER */
+                {/* PROMO BANNER */}
                 <div className="bg-gradient-to-br from-primary-dark to-primary text-white rounded-2xl p-6">
                   <h3 className="font-bold text-lg mb-2">
                     🎁 Dapatkan Promo Spesial!
