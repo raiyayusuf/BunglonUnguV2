@@ -1,4 +1,12 @@
-// lib\utils\debounce.ts:
+/* 
+  lib\utils\debounce.ts
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   DEBOUNCE FUNCTION
+   ============================================ */
+
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,

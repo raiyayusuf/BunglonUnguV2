@@ -1,20 +1,36 @@
+/* 
+  app\globals.css
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   FONT IMPORTS
+   ============================================ */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
+/* ============================================
+   TAILWIND DIRECTIVES
+   ============================================ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom base styles sesuai V1 */
+/* ============================================
+   1. BASE STYLES (HTML, BODY, TYPOGRAPHY)
+   ============================================ */
 @layer base {
+  /* Smooth scrolling for entire site */
   html {
     scroll-behavior: smooth;
   }
 
+  /* Base body styles - Consistent with V1 Design */
   body {
     @apply font-poppins text-text-dark bg-bg-light;
     line-height: 1.6;
   }
 
+  /* Heading styles for consistent typography */
   h1,
   h2,
   h3,
@@ -25,9 +41,16 @@
   }
 }
 
-/* Custom component classes sesuai V1 */
+/* ============================================
+   2. REUSABLE COMPONENT CLASSES
+   ============================================ */
 @layer components {
-  /* BUTTONS - sama seperti di V1 */
+  /* 
+     BUTTON COMPONENTS
+     Consistent with V1 Design System
+  */
+
+  /* Primary Button - Gradient background */
   .btn-primary {
     @apply bg-gradient-to-br from-primary to-primary-dark 
            text-white font-semibold py-3 px-8 rounded-bunglon
@@ -36,6 +59,7 @@
            flex items-center justify-center gap-2;
   }
 
+  /* Outline Button - Border style */
   .btn-outline {
     @apply bg-transparent text-primary border-2 border-primary
            font-semibold py-3 px-8 rounded-bunglon
@@ -43,7 +67,10 @@
            flex items-center justify-center gap-2;
   }
 
-  /* CARDS - Product Card dari V1 */
+  /* 
+     CARD COMPONENTS
+     Product Card from V1 Design
+  */
   .card-product {
     @apply bg-white rounded-bunglon-xl shadow-bunglon-light
            overflow-hidden transition-all duration-300
@@ -51,32 +78,47 @@
            border border-primary-soft/30;
   }
 
-  /* NAVBAR SCROLLED STATE */
+  /* 
+     NAVBAR STATES
+     Scrolled state for navigation
+  */
   .navbar-scrolled {
     @apply bg-primary-dark/95 backdrop-blur-md 
            shadow-bunglon py-2;
   }
 
-  /* BADGES - dari product-card.css */
+  /* 
+     BADGE COMPONENTS
+     From product-card.css V1
+  */
+
+  /* Featured product badge */
   .badge-featured {
     @apply bg-gradient-to-r from-yellow-400 to-yellow-600 
            text-yellow-900 text-xs font-bold px-3 py-1 
            rounded-full;
   }
 
+  /* Category badge */
   .badge-category {
     @apply bg-white/90 text-primary-dark text-xs 
            font-semibold px-3 py-1 rounded-full 
            backdrop-blur-sm;
   }
 
-  /* COLOR CHIPS - dari product-card.css */
+  /* 
+     COLOR CHIPS
+     For product color selection
+  */
   .color-chip {
     @apply w-5 h-5 rounded-full border-2 border-white 
            shadow-md inline-block;
   }
 
-  /* TAGS - dari product-card.css */
+  /* 
+     TAGS
+     Product tags from V1
+  */
   .tag {
     @apply px-2 py-1 bg-primary-soft/50 text-primary 
            rounded text-xs font-medium inline-block 
@@ -84,28 +126,52 @@
   }
 }
 
-/* Custom utilities */
+/* ============================================
+   3. UTILITY CLASSES
+   ============================================ */
 @layer utilities {
+  /* Text balancing for better readability */
   .text-balance {
     text-wrap: balance;
   }
 
+  /* Gradient text utility */
   .text-gradient-primary {
     @apply bg-gradient-to-r from-primary-dark to-primary 
            bg-clip-text text-transparent;
   }
 
+  /* Background grid pattern */
   .bg-grid-pattern {
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237e60bf' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 
-  /* Animation untuk cart count */
+  /* Single pulse animation for cart notifications */
   .animate-pulse-once {
     animation: pulse 0.3s ease-in-out;
   }
+
+  /* Line clamping utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }
 
-/* Animations keyframes */
+/* ============================================
+   4. ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+/* Pulse animation for interactive elements */
 @keyframes pulse {
   0%,
   100% {
@@ -116,6 +182,7 @@
   }
 }
 
+/* Spin animation for loading states */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -125,53 +192,7 @@
   }
 }
 
-/* Dark mode (jika ada di V1) */
-.dark-mode {
-  @apply bg-gray-900 text-gray-100;
-}
-
-.dark-mode .card-product {
-  @apply bg-gray-800 border-gray-700;
-}
-
-/* Responsive untuk footer 5 kolom */
-@media (max-width: 1200px) {
-  .footer-container {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-  .footer-container > div:first-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 768px) {
-  .footer-container {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  .footer-container > div:first-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer-container {
-    grid-template-columns: 1fr !important;
-  }
-  .footer-container > div:first-child {
-    grid-column: span 1;
-  }
-}
-
-/* Animation pause on hover */
-.hover\:pause-animation:hover {
-  animation-play-state: paused;
-}
-
-/* Custom scroll animation untuk product slider */
-.animate-scroll {
-  animation: scroll 40s linear infinite;
-}
-
+/* Scroll animation for product sliders */
 @keyframes scroll {
   0% {
     transform: translateX(0);
@@ -181,105 +202,15 @@
   }
 }
 
-/* Line clamp utilities */
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+/* Scroll animation utility */
+.animate-scroll {
+  animation: scroll 40s linear infinite;
 }
 
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.custom-checkbox {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid #d1d5db;
-  border-radius: 9999px;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s;
-}
-
-.custom-checkbox:checked {
-  background-color: #7e60bf;
-  border-color: #7e60bf;
-}
-
-.custom-checkbox:checked::after {
-  content: "✓";
-  position: absolute;
-  color: white;
-  font-size: 0.75rem;
-  font-weight: bold;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.custom-checkbox:focus {
-  outline: none;
-  ring: 2px;
-  ring-color: rgba(126, 96, 191, 0.3);
-}
-
-.dropdown-enter {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.dropdown-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 300ms,
-    transform 300ms;
-}
-
-.dropdown-exit {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.dropdown-exit-active {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition:
-    opacity 300ms,
-    transform 300ms;
-}
-
-.filter-sidebar-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #7e60bf #f1f1f1;
-}
-
-.filter-sidebar-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.filter-sidebar-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.filter-sidebar-scroll::-webkit-scrollbar-thumb {
-  background: #7e60bf;
-  border-radius: 3px;
-}
-
-.filter-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: #433878;
-}
-
-/* ========== FILTER DROPDOWN SMOOTH ANIMATION ========== */
+/* 
+   Filter Dropdown Animations
+   Smooth expand/collapse transitions
+*/
 @keyframes slideDownFade {
   0% {
     opacity: 0;
@@ -314,6 +245,7 @@
   }
 }
 
+/* Dropdown animation classes */
 .filter-dropdown-enter {
   animation: slideDownFade 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   transform-origin: top;
@@ -324,7 +256,163 @@
   transform-origin: top;
 }
 
-/* Smooth dropdown shadow */
+/* Dropdown transition classes (legacy) */
+.dropdown-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 300ms,
+    transform 300ms;
+}
+
+.dropdown-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 300ms,
+    transform 300ms;
+}
+
+/* ============================================
+   5. FORM ELEMENTS & CUSTOM CONTROLS
+   ============================================ */
+
+/* Custom checkbox styling */
+.custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #d1d5db;
+  border-radius: 9999px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.custom-checkbox:checked {
+  background-color: #7e60bf;
+  border-color: #7e60bf;
+}
+
+.custom-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.custom-checkbox:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: rgba(126, 96, 191, 0.3);
+}
+
+/* ============================================
+   6. DARK MODE STYLES
+   ============================================ */
+.dark-mode {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark-mode .card-product {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* ============================================
+   7. SCROLLBAR STYLING
+   ============================================ */
+
+/* Custom scrollbar for filter sidebar */
+.filter-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #7e60bf #f1f1f1;
+}
+
+.filter-sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-sidebar-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.filter-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #7e60bf;
+  border-radius: 3px;
+}
+
+.filter-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #433878;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* ============================================
+   8. RESPONSIVE DESIGN
+   ============================================ */
+
+/* Footer responsive grid - 5 column layout */
+@media (max-width: 1200px) {
+  .footer-container {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .footer-container > div:first-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .footer-container > div:first-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-container {
+    grid-template-columns: 1fr !important;
+  }
+  .footer-container > div:first-child {
+    grid-column: span 1;
+  }
+}
+
+/* ============================================
+   9. INTERACTIVE STATES & EFFECTS
+   ============================================ */
+
+/* Pause animation on hover */
+.hover\:pause-animation:hover {
+  animation-play-state: paused;
+}
+
+/* Smooth dropdown shadow effects */
 .smooth-dropdown {
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
@@ -338,15 +426,9 @@
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Hide scrollbar with tailwind-scrollbar-hide plugin */
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
-}
+/* ============================================
+   10. PERFORMANCE OPTIMIZATIONS
+   ============================================ */
 
 /* Force GPU acceleration for smooth animations */
 .filter-dropdown-enter,

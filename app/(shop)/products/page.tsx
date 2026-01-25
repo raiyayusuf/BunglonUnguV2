@@ -1,12 +1,21 @@
+/* 
+  app/(shop)/products/page.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState, useMemo } from "react";
-import ProductCard from "@/components/ecommerce/product-card";
 import FilterSidebar from "@/components/ecommerce/filter-sidebar";
+import ProductCard from "@/components/ecommerce/product-card";
+import { useFilters } from "@/hooks/use-filters";
+import { categories, flowerTypes, sortOptions } from "@/lib/data/categories";
 import { products } from "@/lib/data/products";
-import { useFilters } from "@/hooks/useFilters";
 import { filterProducts, sortProducts } from "@/lib/services/product-service";
-import { sortOptions, categories, flowerTypes } from "@/lib/data/categories";
+import { useMemo, useState } from "react";
+
+/* ============================================
+   PRODUCTS PAGE COMPONENT
+   ============================================ */
 
 export default function ProductsPage() {
   const {
@@ -19,13 +28,17 @@ export default function ProductsPage() {
   } = useFilters();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Filter dan sort products
+  /* ============================================
+     PRODUCT FILTERING & SORTING
+     ============================================ */
   const filteredProducts = useMemo(() => {
     const filtered = filterProducts(products, filters);
     return sortProducts(filtered, sortBy);
   }, [filters, sortBy]);
 
-  // ========== DYNAMIC PAGE TITLE FUNCTION ==========
+  /* ============================================
+     DYNAMIC PAGE TITLE FUNCTION
+     ============================================ */
   const getPageTitle = () => {
     if (filters.category.length > 0) {
       const categoryNames = filters.category
@@ -71,7 +84,9 @@ export default function ProductsPage() {
     return "🌷 Koleksi Bunga Terbaik";
   };
 
-  // Dynamic description based on filters
+  /* ============================================
+     DYNAMIC PAGE DESCRIPTION FUNCTION
+     ============================================ */
   const getPageDescription = () => {
     if (filteredProducts.length === 0) {
       return "Tidak ada produk yang sesuai dengan filter yang dipilih.";
@@ -88,12 +103,14 @@ export default function ProductsPage() {
     return "Temukan bunga segar untuk setiap momen spesial. Pilih dari berbagai jenis bunga dengan packaging eksklusif.";
   };
 
-  // ========== FIX: HAPUS HANDLER INI! ==========
-  // ProductCard sudah handle sendiri, kita tidak perlu callback yang memanggil addToCart
-
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ========== DYNAMIC HEADER SECTION ========== */}
+      {/* ============================================
+          DYNAMIC HEADER SECTION
+          ============================================ */}
       <div className="bg-gradient-to-br from-primary-dark to-primary text-white py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
@@ -114,11 +131,12 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
-      {/* ========== END HEADER SECTION ========== */}
 
-      {/* Main Content */}
+      {/* ============================================
+          MAIN CONTENT AREA
+          ============================================ */}
       <div className="container mx-auto px-4 py-8">
-        {/* Mobile Filter Button */}
+        {/* MOBILE FILTER BUTTON */}
         <div className="md:hidden mb-6">
           <button
             onClick={() => setIsFilterOpen(true)}
@@ -157,8 +175,11 @@ export default function ProductsPage() {
           </button>
         </div>
 
+        {/* CONTENT LAYOUT */}
         <div className="flex flex-col md:flex-row gap-6 lg:gap-8">
-          {/* Filter Sidebar - STICKY WITH SCROLL */}
+          {/* ============================================
+              FILTER SIDEBAR SECTION
+              ============================================ */}
           <div className="md:w-72 lg:w-80">
             <div
               className={`${isFilterOpen ? "fixed inset-0 z-50 bg-white overflow-y-auto scrollbar-hide" : "hidden md:block sticky top-28 h-[calc(100vh-6rem)] scrollbar-hide"}`}
@@ -193,7 +214,7 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {/* Overlay for mobile */}
+          {/* MOBILE FILTER OVERLAY */}
           {isFilterOpen && (
             <div
               className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -201,9 +222,11 @@ export default function ProductsPage() {
             />
           )}
 
-          {/* Main Products Area */}
+          {/* ============================================
+              MAIN PRODUCTS AREA
+              ============================================ */}
           <main className="flex-1">
-            {/* Toolbar */}
+            {/* TOOLBAR SECTION */}
             <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -217,10 +240,10 @@ export default function ProductsPage() {
                     </span>
                   </div>
 
-                  {/* Active Filters Badges */}
+                  {/* ACTIVE FILTERS BADGES */}
                   {activeFilterCount > 0 && (
                     <div className="hidden md:flex flex-wrap gap-2">
-                      {/* Category badges */}
+                      {/* Category Badges */}
                       {filters.category.map((catId) => {
                         const cat = categories.find((c) => c.id === catId);
                         if (!cat) return null;
@@ -245,7 +268,7 @@ export default function ProductsPage() {
                         );
                       })}
 
-                      {/* Flower type badges */}
+                      {/* Flower Type Badges */}
                       {filters.flowerType.map((flowerId) => {
                         const flower = flowerTypes.find(
                           (f) => f.id === flowerId,
@@ -274,7 +297,7 @@ export default function ProductsPage() {
                         );
                       })}
 
-                      {/* Price range badge */}
+                      {/* Price Range Badge */}
                       {filters.priceRange && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
                           <i className="fas fa-tag"></i>
@@ -291,7 +314,7 @@ export default function ProductsPage() {
                         </span>
                       )}
 
-                      {/* Search keyword badge */}
+                      {/* Search Keyword Badge */}
                       {filters.searchKeyword && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                           <i className="fas fa-search"></i>"
@@ -305,7 +328,7 @@ export default function ProductsPage() {
                         </span>
                       )}
 
-                      {/* Featured badge */}
+                      {/* Featured Badge */}
                       {filters.featuredOnly && (
                         <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
                           <i className="fas fa-star"></i> Unggulan
@@ -318,7 +341,7 @@ export default function ProductsPage() {
                         </span>
                       )}
 
-                      {/* Clear all button */}
+                      {/* Clear All Button */}
                       <button
                         onClick={resetFilters}
                         className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium transition-colors"
@@ -342,7 +365,7 @@ export default function ProductsPage() {
                   )}
                 </div>
 
-                {/* Sort */}
+                {/* SORT DROPDOWN */}
                 <div className="flex items-center gap-3 relative group">
                   <span className="text-gray-600 font-medium">Urutkan:</span>
                   <div className="relative">
@@ -389,8 +412,9 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Products Grid */}
+            {/* PRODUCTS GRID SECTION */}
             {filteredProducts.length === 0 ? (
+              /* EMPTY STATE */
               <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
                 <div className="max-w-md mx-auto">
                   <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -438,19 +462,13 @@ export default function ProductsPage() {
               </div>
             ) : (
               <>
-                {/* Grid Layout */}
+                {/* PRODUCTS GRID */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      // ========== FIX: HAPUS onAddToCart atau buat kosong ==========
-                      // onAddToCart={undefined}
-                    />
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-
-                {/* Pagination Info */}
+                /* PAGINATION INFO */
                 <div className="mt-12 pt-8 border-t border-gray-200 text-center">
                   <p className="text-gray-600">
                     Menampilkan semua {filteredProducts.length} produk
@@ -467,7 +485,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Mobile Bottom Bar */}
+      {/* MOBILE BOTTOM BAR */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
         <div className="flex items-center justify-between">
           <button
@@ -502,7 +520,7 @@ export default function ProductsPage() {
             Reset
           </button>
 
-          {/* Quick cart info */}
+          {/* Quick Cart Info */}
           <div className="flex items-center gap-2">
             <i className="fas fa-shopping-cart text-primary"></i>
             <span className="text-sm font-medium">

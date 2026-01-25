@@ -1,10 +1,14 @@
-// components/sections/featured-products-section.tsx (FIX GRADIENT OVERLAY)
+/* 
+  components/sections/featured-products-section.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState } from "react";
-import { useCart } from "@/hooks/use-cart";
 import ProductCard from "@/components/ecommerce/product-card";
+import { useCart } from "@/hooks/use-cart";
 import type { Product } from "@/lib/data/products";
+import { useState } from "react";
 
 export interface FeaturedProductsSectionProps {
   products: Product[];
@@ -21,10 +25,16 @@ export default function FeaturedProductsSection({
   maxItems = 8,
   showViewAll = true,
 }: FeaturedProductsSectionProps) {
+  /* ============================================
+     STATE & HOOKS
+     ============================================ */
   const { addToCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [addedProductId, setAddedProductId] = useState<number | null>(null);
 
+  /* ============================================
+     FUNCTIONS
+     ============================================ */
   const handleAddToCart = async (productId: number) => {
     try {
       setIsLoading(true);
@@ -47,18 +57,29 @@ export default function FeaturedProductsSection({
     }
   };
 
-  // Display products untuk running slider
+  /* ============================================
+     DATA PREPARATION
+     ============================================ */
   const displayProducts = products.slice(0, maxItems);
 
-  // Loading skeleton
+  /* ============================================
+     LOADING STATE
+     ============================================ */
   if (isLoading && displayProducts.length === 0) {
     return (
       <section className="py-16 px-4 bg-gradient-to-b from-white to-primary-soft/30">
         <div className="container mx-auto max-w-6xl">
+          {/* ============================================
+             LOADING HEADER
+             ============================================ */}
           <div className="text-center mb-12">
             <div className="h-8 w-48 bg-gray-200 rounded-lg animate-pulse mx-auto mb-4"></div>
             <div className="h-4 w-64 bg-gray-200 rounded-lg animate-pulse mx-auto"></div>
           </div>
+
+          {/* ============================================
+             LOADING PRODUCT GRID
+             ============================================ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, index) => (
               <div
@@ -82,7 +103,9 @@ export default function FeaturedProductsSection({
   return (
     <section className="py-16 px-4 bg-gradient-to-b from-white to-primary-soft/30">
       <div className="container mx-auto max-w-6xl">
-        {/* Section Header */}
+        {/* ============================================
+           SECTION HEADER
+           ============================================ */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-dark mb-4">
             {title}
@@ -94,18 +117,28 @@ export default function FeaturedProductsSection({
           )}
         </div>
 
-        {/* RUNNING PRODUCTS SLIDER dengan GRADIENT OVERLAY FIX */}
+        {/* ============================================
+           RUNNING PRODUCTS SLIDER
+           ============================================ */}
         {displayProducts.length > 0 && (
           <div className="mb-8 relative">
-            {/* CONTAINER UTAMA dengan overflow-hidden */}
+            {/* ============================================
+               SLIDER CONTAINER
+               ============================================ */}
             <div className="relative overflow-hidden rounded-xl">
-              {/* GRADIENT OVERLAY KIRI (lebih tebal) */}
+              {/* ============================================
+                 LEFT GRADIENT OVERLAY
+                 ============================================ */}
               <div className="absolute left-0 top-0 bottom-0 w-32 md:w-48 bg-gradient-to-r from-white via-white to-transparent z-10 pointer-events-none"></div>
 
-              {/* GRADIENT OVERLAY KANAN (lebih tebal) */}
+              {/* ============================================
+                 RIGHT GRADIENT OVERLAY
+                 ============================================ */}
               <div className="absolute right-0 top-0 bottom-0 w-32 md:w-48 bg-gradient-to-l from-white via-white to-transparent z-10 pointer-events-none"></div>
 
-              {/* Running Slider Container dengan PADDING */}
+              {/* ============================================
+                 RUNNING SLIDER CONTENT
+                 ============================================ */}
               <div className="flex gap-6 animate-scroll py-4 px-8">
                 {[...displayProducts, ...displayProducts].map(
                   (product, index) => (
@@ -113,7 +146,6 @@ export default function FeaturedProductsSection({
                       key={`${product.id}-${index}`}
                       className="flex-shrink-0 w-72 md:w-80 transform transition-transform duration-300 hover:scale-[1.02]"
                     >
-                      {/* ProductCard FULL VERSION */}
                       <ProductCard
                         product={product}
                         showCategory={true}
@@ -127,12 +159,16 @@ export default function FeaturedProductsSection({
                 )}
               </div>
 
-              {/* SHADOW BORDER ATAS & BAWAH */}
+              {/* ============================================
+                 SLIDER BORDERS
+                 ============================================ */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary-soft/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary-soft/20 to-transparent"></div>
             </div>
 
-            {/* INSTRUCTION TEXT */}
+            {/* ============================================
+               SLIDER INSTRUCTION
+               ============================================ */}
             <div className="text-center mt-6 text-sm text-gray-500">
               <span className="inline-flex items-center gap-1">
                 <svg
@@ -154,7 +190,9 @@ export default function FeaturedProductsSection({
           </div>
         )}
 
-        {/* Empty State */}
+        {/* ============================================
+           EMPTY STATE
+           ============================================ */}
         {displayProducts.length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4 text-gray-300">🌼</div>
@@ -165,7 +203,9 @@ export default function FeaturedProductsSection({
           </div>
         )}
 
-        {/* View All Button */}
+        {/* ============================================
+           VIEW ALL BUTTON
+           ============================================ */}
         {showViewAll && displayProducts.length > 0 && (
           <div className="text-center mt-12">
             <a

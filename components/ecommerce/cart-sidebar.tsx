@@ -1,28 +1,39 @@
-// components/ecommerce/cart-sidebar.tsx
+/* 
+  components/ecommerce/cart-sidebar.tsx
+  Organized by: raiyayusuf
+*/
 
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 import {
+  clearCart,
+  formatPrice,
   getCart,
   getCartTotal,
   removeFromCart,
   updateQuantity,
-  clearCart,
-  formatPrice,
 } from "@/lib/services/cart-service";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface CartSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+/* ============================================
+   CART SIDEBAR COMPONENT
+   ============================================ */
+
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
+  const router = useRouter();
   const [cartItems, setCartItems] = useState(getCart());
   const [total, setTotal] = useState(getCartTotal());
-  const router = useRouter();
+
+  /* ============================================
+     EFFECTS & EVENT LISTENERS
+     ============================================ */
 
   useEffect(() => {
     const updateCartData = () => {
@@ -56,6 +67,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  /* ============================================
+     EVENT HANDLERS
+     ============================================ */
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -117,12 +132,21 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  /* ============================================
+     CALCULATIONS
+     ============================================ */
+
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
 
   if (!isOpen) return null;
 
   return (
     <>
+      {/* OVERLAY */}
       <div
         className={`fixed inset-0 bg-black/50 z-40 transition-all duration-300 ${
           isOpen
@@ -132,11 +156,13 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
         onClick={handleOverlayClick}
       />
 
+      {/* SIDEBAR */}
       <div
         className={`fixed top-0 right-0 h-full w-full md:w-96 bg-white z-50 flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
+        {/* HEADER */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary-light to-primary rounded-lg flex items-center justify-center">
@@ -184,8 +210,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
+        {/* CONTENT AREA */}
         <div className="flex-1 overflow-y-auto p-4">
           {cartItems.length === 0 ? (
+            /* EMPTY CART STATE */
             <div className="h-full flex flex-col items-center justify-center text-center py-12">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                 <svg
@@ -218,6 +246,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
             </div>
           ) : (
             <>
+              {/* CLEAR ALL BUTTON */}
               <div className="mb-4 flex justify-end">
                 <button
                   onClick={handleClearCart}
@@ -240,6 +269,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                 </button>
               </div>
 
+              {/* CART ITEMS LIST */}
               <div className="space-y-4">
                 {cartItems.map((item) => (
                   <div
@@ -247,6 +277,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                     className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                   >
                     <div className="flex gap-4">
+                      {/* PRODUCT IMAGE */}
                       <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
                           src={item.image || "/images/placeholder.jpg"}
@@ -261,6 +292,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                         />
                       </div>
 
+                      {/* PRODUCT INFO */}
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-gray-800 mb-1 line-clamp-1">
                           {item.name}
@@ -269,6 +301,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                           {formatPrice(item.price)}
                         </p>
 
+                        {/* QUANTITY CONTROLS */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() =>
@@ -339,6 +372,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                         </div>
                       </div>
 
+                      {/* PRICE TOTAL */}
                       <div className="text-right flex-shrink-0">
                         <div className="font-bold text-primary text-lg">
                           {formatPrice(item.price * item.quantity)}
@@ -355,8 +389,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
+        {/* FOOTER - CHECKOUT SECTION */}
         {cartItems.length > 0 && (
           <div className="border-t border-gray-200 p-4 bg-white shadow-lg">
+            {/* ORDER SUMMARY */}
             <div className="mb-4 space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Subtotal:</span>
@@ -374,6 +410,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
 
+            {/* ACTION BUTTONS */}
             <div className="space-y-3">
               <button
                 onClick={handleViewCart}
@@ -421,6 +458,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
               </button>
             </div>
 
+            {/* CONTINUE SHOPPING LINK */}
             <div className="mt-4 text-center">
               <button
                 onClick={handleContinueShopping}

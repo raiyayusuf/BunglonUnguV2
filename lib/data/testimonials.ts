@@ -1,4 +1,11 @@
-// lib/data/testimonials.ts
+/* 
+  lib/data/testimonials.ts
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   TESTIMONIAL INTERFACE
+   ============================================ */
 export interface Testimonial {
   id: number;
   name: string;
@@ -9,6 +16,9 @@ export interface Testimonial {
   productId: number;
 }
 
+/* ============================================
+   TESTIMONIALS DATA
+   ============================================ */
 export const testimonials: Testimonial[] = [
   {
     id: 1,
@@ -72,7 +82,9 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
-// Helper functions
+/* ============================================
+   HELPER FUNCTIONS
+   ============================================ */
 export function getTestimonialsByProductId(productId: number): Testimonial[] {
   return testimonials.filter((t) => t.productId === productId);
 }

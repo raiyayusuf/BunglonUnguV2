@@ -1,4 +1,12 @@
-// lib\types\filter.ts:
+/* 
+  lib\types\filter.ts - Filter Type Definitions
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   FILTER STATE INTERFACE
+   ============================================ */
+
 export interface FilterState {
   category: string[];
   flowerType: string[];
@@ -10,6 +18,10 @@ export interface FilterState {
   searchKeyword: string;
 }
 
+/* ============================================
+   PRICE RANGE INTERFACE
+   ============================================ */
+
 export interface PriceRange {
   id: string;
   name: string;
@@ -18,6 +30,10 @@ export interface PriceRange {
   count: number;
 }
 
+/* ============================================
+   FILTER CATEGORY INTERFACE
+   ============================================ */
+
 export interface FilterCategory {
   id: string;
   name: string;
@@ -25,6 +41,10 @@ export interface FilterCategory {
   count: number;
   description?: string;
 }
+
+/* ============================================
+   FILTER OPTION INTERFACE
+   ============================================ */
 
 export interface FilterOption {
   id: string;

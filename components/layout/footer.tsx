@@ -1,14 +1,21 @@
-// components\layout\footer.tsx:
+/* 
+  components/layout/footer.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
 
+  /* ============================================
+     FUNCTIONS
+     ============================================ */
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateEmail(email)) {
@@ -35,6 +42,9 @@ export default function Footer() {
     return re.test(email);
   };
 
+  /* ============================================
+     DATA
+     ============================================ */
   const socialLinks = [
     {
       href: "https://wa.me/6282227180340",
@@ -85,7 +95,13 @@ export default function Footer() {
 
       <div className="px-5">
         <div className="max-w-[1300px] mx-auto">
+          {/* ============================================
+             MAIN CONTENT GRID
+             ============================================ */}
           <div className="flex flex-wrap justify-between gap-x-8 gap-y-6">
+            {/* ============================================
+               COMPANY INFO
+               ============================================ */}
             <div className="flex-1 min-w-[280px] max-w-[320px]">
               <div className="mb-4">
                 <Image
@@ -103,6 +119,9 @@ export default function Footer() {
               </p>
             </div>
 
+            {/* ============================================
+               QUICK LINKS
+               ============================================ */}
             <div className="w-[140px]">
               <h4 className="text-white text-lg font-semibold mb-4 pb-2 relative after:absolute after:left-0 after:bottom-0 after:w-10 after:h-0.5 after:bg-primary-light after:rounded">
                 Link Gercep
@@ -122,6 +141,9 @@ export default function Footer() {
               </ul>
             </div>
 
+            {/* ============================================
+               CONTACT INFO
+               ============================================ */}
             <div className="w-[200px]">
               <h4 className="text-white text-lg font-semibold mb-4 pb-2 relative after:absolute after:left-0 after:bottom-0 after:w-10 after:h-0.5 after:bg-primary-light after:rounded">
                 Alamat & Kontak
@@ -140,6 +162,9 @@ export default function Footer() {
               </ul>
             </div>
 
+            {/* ============================================
+               SOCIAL MEDIA
+               ============================================ */}
             <div className="w-[140px]">
               <h4 className="text-white text-lg font-semibold mb-3">
                 Media Sosial
@@ -167,6 +192,9 @@ export default function Footer() {
               </div>
             </div>
 
+            {/* ============================================
+               NEWSLETTER
+               ============================================ */}
             <div className="w-[200px]">
               <h4 className="text-white text-lg font-semibold mb-3">
                 Berlangganan
@@ -194,6 +222,9 @@ export default function Footer() {
             </div>
           </div>
 
+          {/* ============================================
+             COPYRIGHT
+             ============================================ */}
           <div className="pt-6 mt-6 border-t border-primary-light/20 text-center">
             <p className="text-primary-soft/70 text-[16px]">
               &copy; {currentYear} Bakule Kembang. All rights reserved

@@ -1,7 +1,15 @@
-// lib\services\product-service.ts:
+/* 
+  lib\services\product-service.ts
+  Organized by: raiyayusuf
+*/
+
 import { Product } from "@/lib/data/products";
 import { FilterState } from "@/lib/types/filter";
 import { SortOption } from "@/lib/types/product";
+
+/* ============================================
+   PRODUCT FILTERING
+   ============================================ */
 
 export function filterProducts(
   products: Product[],
@@ -9,21 +17,18 @@ export function filterProducts(
 ): Product[] {
   let filtered = [...products];
 
-  // Filter by category
   if (filters.category && filters.category.length > 0) {
     filtered = filtered.filter((product) =>
       filters.category.includes(product.category),
     );
   }
 
-  // Filter by flower type
   if (filters.flowerType && filters.flowerType.length > 0) {
     filtered = filtered.filter((product) =>
       filters.flowerType.includes(product.flowerType),
     );
   }
 
-  // Filter by price range
   if (filters.priceRange) {
     filtered = filtered.filter(
       (product) =>
@@ -32,26 +37,22 @@ export function filterProducts(
     );
   }
 
-  // Filter by colors
   if (filters.colors && filters.colors.length > 0) {
     filtered = filtered.filter((product) =>
       product.color.some((color) => filters.colors.includes(color)),
     );
   }
 
-  // Filter by tags
   if (filters.tags && filters.tags.length > 0) {
     filtered = filtered.filter((product) =>
       product.tags.some((tag) => filters.tags.includes(tag)),
     );
   }
 
-  // Filter featured only
   if (filters.featuredOnly) {
     filtered = filtered.filter((product) => product.featured);
   }
 
-  // Filter by search keyword
   if (filters.searchKeyword && filters.searchKeyword.trim() !== "") {
     const keyword = filters.searchKeyword.toLowerCase().trim();
     filtered = filtered.filter(
@@ -63,13 +64,16 @@ export function filterProducts(
     );
   }
 
-  // Filter in stock only
   if (filters.inStockOnly) {
     filtered = filtered.filter((product) => product.inStock);
   }
 
   return filtered;
 }
+
+/* ============================================
+   PRODUCT SORTING
+   ============================================ */
 
 export function sortProducts(
   products: Product[],
@@ -109,6 +113,10 @@ export function sortProducts(
   }
 }
 
+/* ============================================
+   RELATED PRODUCTS
+   ============================================ */
+
 export function getRelatedProducts(
   products: Product[],
   productId: number,
@@ -128,6 +136,10 @@ export function getRelatedProducts(
 
   return related.sort(() => 0.5 - Math.random()).slice(0, limit);
 }
+
+/* ============================================
+   PRODUCT GETTERS
+   ============================================ */
 
 export function getProductById(
   products: Product[],
@@ -163,6 +175,10 @@ export function getProductsInPriceRange(
     (product) => product.price >= min && product.price <= max,
   );
 }
+
+/* ============================================
+   PRODUCT STATISTICS
+   ============================================ */
 
 export function getProductStats(products: Product[]) {
   const totalProducts = products.length;

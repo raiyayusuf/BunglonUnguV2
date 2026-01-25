@@ -1,8 +1,15 @@
-// hooks/useCart.ts
+/* 
+  hooks/useCart.ts
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+/* ============================================
+   INTERFACES
+   ============================================ */
 export interface CartItem {
   productId: number;
   quantity: number;
@@ -17,20 +24,25 @@ interface ProductDetails {
   inStock: boolean;
 }
 
-// Cart key untuk localStorage
+/* ============================================
+   CONSTANTS
+   ============================================ */
 const CART_STORAGE_KEY = "bakule_kembang_cart_v2";
 
+/* ============================================
+   MAIN HOOK
+   ============================================ */
 export function useCart() {
-  // State untuk cart items
+  /* ============================================
+     STATE INITIALIZATION
+     ============================================ */
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    // Initialize from localStorage pada client side saja
     if (typeof window === "undefined") return [];
 
     try {
       const saved = localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Konversi string date back ke Date object
         return parsed.map((item: any) => ({
           ...item,
           addedAt: new Date(item.addedAt),
@@ -43,14 +55,15 @@ export function useCart() {
     return [];
   });
 
-  // State untuk cart metadata (total, count, dll)
   const [cartMetadata, setCartMetadata] = useState({
     totalItems: 0,
     totalQuantity: 0,
     lastUpdated: new Date(),
   });
 
-  // Calculate cart metadata
+  /* ============================================
+     HELPER FUNCTIONS
+     ============================================ */
   const calculateMetadata = useCallback((items: CartItem[]) => {
     const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
     const totalItems = items.length;
@@ -62,19 +75,18 @@ export function useCart() {
     };
   }, []);
 
-  // Save to localStorage dan update metadata
+  /* ============================================
+     LOCAL STORAGE SYNC
+     ============================================ */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     try {
-      // Simpan ke localStorage
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
 
-      // Update metadata
       const newMetadata = calculateMetadata(cartItems);
       setCartMetadata(newMetadata);
 
-      // Dispatch custom event untuk komponen lain (navbar, dll)
       window.dispatchEvent(
         new CustomEvent("cartUpdated", {
           detail: {
@@ -84,7 +96,6 @@ export function useCart() {
         }),
       );
 
-      // Dispatch untuk analytics atau logging jika perlu
       window.dispatchEvent(
         new CustomEvent("cartChanged", {
           detail: {
@@ -99,25 +110,25 @@ export function useCart() {
     }
   }, [cartItems, calculateMetadata]);
 
-  // Add item to cart
+  /* ============================================
+     CART ACTIONS
+     ============================================ */
   const addToCart = useCallback((productId: number, quantity: number = 1) => {
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.productId === productId);
 
       if (existingItem) {
-        // Update quantity jika item sudah ada
         return prev.map((item) =>
           item.productId === productId
             ? {
                 ...item,
                 quantity: item.quantity + quantity,
-                addedAt: new Date(), // Update timestamp
+                addedAt: new Date(),
               }
             : item,
         );
       }
 
-      // Tambah item baru
       return [
         ...prev,
         {
@@ -129,12 +140,10 @@ export function useCart() {
     });
   }, []);
 
-  // Remove item from cart
   const removeFromCart = useCallback((productId: number) => {
     setCartItems((prev) => prev.filter((item) => item.productId !== productId));
   }, []);
 
-  // Update item quantity
   const updateQuantity = useCallback(
     (productId: number, quantity: number) => {
       if (quantity <= 0) {
@@ -153,12 +162,13 @@ export function useCart() {
     [removeFromCart],
   );
 
-  // Clear entire cart
   const clearCart = useCallback(() => {
     setCartItems([]);
   }, []);
 
-  // Check if product is in cart
+  /* ============================================
+     CART QUERIES
+     ============================================ */
   const isInCart = useCallback(
     (productId: number): boolean => {
       return cartItems.some((item) => item.productId === productId);
@@ -166,7 +176,6 @@ export function useCart() {
     [cartItems],
   );
 
-  // Get quantity of specific product
   const getProductQuantity = useCallback(
     (productId: number): number => {
       const item = cartItems.find((item) => item.productId === productId);
@@ -175,7 +184,6 @@ export function useCart() {
     [cartItems],
   );
 
-  // Calculate total price (butuh product details)
   const calculateTotalPrice = useCallback(
     (products: ProductDetails[]): number => {
       return cartItems.reduce((total, cartItem) => {
@@ -186,7 +194,6 @@ export function useCart() {
     [cartItems],
   );
 
-  // Get cart item details dengan product info
   const getCartWithDetails = useCallback(
     (products: ProductDetails[]) => {
       return cartItems.map((cartItem) => {
@@ -201,7 +208,9 @@ export function useCart() {
     [cartItems],
   );
 
-  // Load cart from external source (API, dll)
+  /* ============================================
+     CART SYNC & IMPORT/EXPORT
+     ============================================ */
   const loadCart = useCallback((items: CartItem[]) => {
     setCartItems(
       items.map((item) => ({
@@ -211,21 +220,14 @@ export function useCart() {
     );
   }, []);
 
-  // Sync cart dengan server (contoh untuk nanti)
   const syncWithServer = useCallback(async () => {
     try {
-      // Di sini bisa panggil API untuk sync cart
-      // const response = await fetch('/api/cart/sync', {
-      //   method: 'POST',
-      //   body: JSON.stringify(cartItems)
-      // });
       console.log("Cart synced with server:", cartItems);
     } catch (error) {
       console.error("Failed to sync cart with server:", error);
     }
   }, [cartItems]);
 
-  // Export cart data untuk backup/download
   const exportCart = useCallback((): string => {
     return JSON.stringify(
       {
@@ -238,7 +240,6 @@ export function useCart() {
     );
   }, [cartItems, cartMetadata]);
 
-  // Import cart data
   const importCart = useCallback(
     (cartData: string) => {
       try {
@@ -256,7 +257,9 @@ export function useCart() {
     [loadCart],
   );
 
-  // Event listener untuk external updates (jika perlu)
+  /* ============================================
+     EXTERNAL EVENT LISTENERS
+     ============================================ */
   useEffect(() => {
     const handleStorageUpdate = (event: StorageEvent) => {
       if (event.key === CART_STORAGE_KEY && event.newValue) {
@@ -273,6 +276,9 @@ export function useCart() {
     return () => window.removeEventListener("storage", handleStorageUpdate);
   }, []);
 
+  /* ============================================
+     RETURN VALUES
+     ============================================ */
   return {
     // State
     cartItems,
@@ -305,5 +311,7 @@ export function useCart() {
   };
 }
 
-// Export tipe untuk digunakan di komponen lain
+/* ============================================
+   TYPE EXPORTS
+   ============================================ */
 export type UseCartReturnType = ReturnType<typeof useCart>;

@@ -1,18 +1,25 @@
-// app\(shop)\products\[id]\page.tsx:
+/* 
+  app/(shop)/products/[id]/page.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useEffect, useState } from "react";
-import { notFound, useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import ProductCard from "@/components/ecommerce/product-card";
 import { products } from "@/lib/data/products";
+import { addToCart } from "@/lib/services/cart-service";
 import {
   getProductById,
   getRelatedProducts,
 } from "@/lib/services/product-service";
-import { addToCart } from "@/lib/services/cart-service";
 import { formatPrice } from "@/lib/utils/format";
-import { categories, flowerTypes } from "@/lib/data/categories";
+import Image from "next/image";
+import { notFound, useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+/* ============================================
+   PRODUCT DETAIL PAGE COMPONENT
+   ============================================ */
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -30,7 +37,9 @@ export default function ProductDetailPage() {
 
   const relatedProducts = getRelatedProducts(products, productId, 4);
 
-  // Color mapping
+  /* ============================================
+     COLOR MAPPING UTILITY
+     ============================================ */
   const getColorCode = (colorName: string): string => {
     const colorMap: Record<string, string> = {
       Merah: "#ff4757",
@@ -48,7 +57,9 @@ export default function ProductDetailPage() {
     return colorMap[colorName] || "#dfe6e9";
   };
 
-  // Category and flower type names
+  /* ============================================
+     CATEGORY & FLOWER TYPE MAPPING
+     ============================================ */
   const categoryNames: Record<string, string> = {
     bouquet: "Buket",
     bunch: "Bunch",
@@ -63,7 +74,9 @@ export default function ProductDetailPage() {
     mixed: "Campuran",
   };
 
-  // Handle add to cart
+  /* ============================================
+     CART HANDLER FUNCTION
+     ============================================ */
   const handleAddToCart = async () => {
     if (!product.inStock) {
       alert("Maaf, produk ini sedang habis stok.");
@@ -75,7 +88,6 @@ export default function ProductDetailPage() {
     try {
       addToCart(product, quantity);
 
-      // Success feedback
       setTimeout(() => {
         setIsAddingToCart(false);
       }, 1500);
@@ -85,13 +97,18 @@ export default function ProductDetailPage() {
     }
   };
 
-  // Initialize selected image
+  /* ============================================
+     INITIALIZE SELECTED IMAGE
+     ============================================ */
   useEffect(() => {
     if (product && !selectedImage) {
       setSelectedImage(product.image);
     }
   }, [product, selectedImage]);
 
+  /* ============================================
+     PRODUCT NOT FOUND STATE
+     ============================================ */
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -110,9 +127,14 @@ export default function ProductDetailPage() {
     );
   }
 
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
+      {/* ============================================
+          BREADCRUMB NAVIGATION
+          ============================================ */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-600">
@@ -135,10 +157,12 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Main Product */}
+      {/* ============================================
+          MAIN PRODUCT CONTENT
+          ============================================ */}
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Images */}
+          {/* PRODUCT IMAGES SECTION */}
           <div>
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-4">
               <div className="relative h-96 md:h-[500px]">
@@ -160,9 +184,9 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Product Info */}
+          {/* PRODUCT INFORMATION SECTION */}
           <div className="space-y-6">
-            {/* Header */}
+            {/* PRODUCT HEADER */}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
                 {product.name}
@@ -187,8 +211,7 @@ export default function ProductDetailPage() {
                 </span>
               </div>
             </div>
-
-            {/* Price & Stock */}
+            {/* PRICE & STOCK INFO */}
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -211,8 +234,7 @@ export default function ProductDetailPage() {
                 {product.stock} unit tersedia
               </div>
             </div>
-
-            {/* Description */}
+            {/* PRODUCT DESCRIPTION */}
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">
                 Deskripsi Produk
@@ -221,8 +243,7 @@ export default function ProductDetailPage() {
                 {product.description}
               </p>
             </div>
-
-            {/* Specifications */}
+            /* PRODUCT SPECIFICATIONS */
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Spesifikasi
@@ -280,8 +301,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
             </div>
-
-            {/* Quantity & Actions */}
+            /* QUANTITY & ACTIONS SECTION */
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <span className="text-gray-700 font-medium">Jumlah:</span>
@@ -392,8 +412,7 @@ export default function ProductDetailPage() {
                 </button>
               </div>
             </div>
-
-            {/* Additional Info */}
+            /* ADDITIONAL INFO SECTION */
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -465,8 +484,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-
-        {/* Related Products */}
+        /* RELATED PRODUCTS SECTION */
         {relatedProducts.length > 0 && (
           <div className="mt-16 pt-12 border-t border-gray-200">
             <div className="flex items-center justify-between mb-8">
@@ -487,8 +505,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
         )}
-
-        {/* Back Button */}
+        /* BACK BUTTON SECTION */
         <div className="mt-12 pt-8 border-t border-gray-200">
           <button
             onClick={() => router.push("/products")}

@@ -1,4 +1,11 @@
-// lib\data\products.ts:
+/* 
+  lib/data/products.ts
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   PRODUCT INTERFACE
+   ============================================ */
 export interface Product {
   id: number;
   name: string;
@@ -20,8 +27,13 @@ export interface Product {
   freshness?: string;
 }
 
+/* ============================================
+   PRODUCTS DATA
+   ============================================ */
 export const products: Product[] = [
-  // Bouquet Flowers
+  /* ============================================
+     BOUQUET FLOWERS
+     ============================================ */
   {
     id: 1,
     filename: "rose-red-bouquet-white.jpg",
@@ -220,7 +232,10 @@ export const products: Product[] = [
     packaging: "bouquet",
     inStock: true,
   },
-  // Bunch Flowers
+
+  /* ============================================
+     BUNCH FLOWERS
+     ============================================ */
   {
     id: 13,
     filename: "gerbera-white-bunch-brown.jpg",
@@ -329,7 +344,10 @@ export const products: Product[] = [
     packaging: "bunch",
     inStock: true,
   },
-  // Bag Flowers
+
+  /* ============================================
+     BAG FLOWERS
+     ============================================ */
   {
     id: 19,
     filename: "rose-red-white-bag.jpg",
@@ -458,7 +476,9 @@ export const products: Product[] = [
   },
 ];
 
-// Helper functions
+/* ============================================
+   HELPER FUNCTIONS
+   ============================================ */
 export function getProductsByCategory(categoryId: string): Product[] {
   return products.filter((product) => product.category === categoryId);
 }
@@ -479,6 +499,9 @@ export function getProductById(id: number): Product | undefined {
   return products.find((product) => product.id === id);
 }
 
+/* ============================================
+   PACKAGING TYPES
+   ============================================ */
 export const packagingTypes = [
   {
     id: "bouquet",
@@ -497,6 +520,9 @@ export const packagingTypes = [
   },
 ];
 
+/* ============================================
+   PRICE RANGE STATS
+   ============================================ */
 export const priceRange = {
   min: Math.min(...products.map((p) => p.price)),
   max: Math.max(...products.map((p) => p.price)),

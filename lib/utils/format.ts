@@ -1,4 +1,12 @@
-// lib\utils\format.ts:
+/* 
+  lib\utils\format.ts
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   FORMAT FUNCTIONS
+   ============================================ */
+
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",

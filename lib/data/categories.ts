@@ -1,6 +1,13 @@
-// lib\data\categories.ts:
+/* 
+  lib/data/categories.ts
+  Organized by: raiyayusuf
+*/
+
 import { products } from "./products";
 
+/* ============================================
+   CATEGORIES DATA
+   ============================================ */
 export const categories = [
   {
     id: "bouquet",
@@ -25,6 +32,9 @@ export const categories = [
   },
 ];
 
+/* ============================================
+   FLOWER TYPES DATA
+   ============================================ */
 export const flowerTypes = [
   {
     id: "rose",
@@ -58,6 +68,9 @@ export const flowerTypes = [
   },
 ];
 
+/* ============================================
+   PRICE RANGES DATA
+   ============================================ */
 export const priceRanges = [
   {
     id: "under-100",
@@ -91,6 +104,9 @@ export const priceRanges = [
   },
 ];
 
+/* ============================================
+   COLORS DATA
+   ============================================ */
 export const colors = (() => {
   const allColors = products.flatMap((p) => p.color);
   const uniqueColors = [...new Set(allColors)];
@@ -102,6 +118,9 @@ export const colors = (() => {
   }));
 })();
 
+/* ============================================
+   TAGS DATA
+   ============================================ */
 export const tags = (() => {
   const allTags = products.flatMap((p) => p.tags);
   const uniqueTags = [...new Set(allTags)];
@@ -113,6 +132,9 @@ export const tags = (() => {
   }));
 })();
 
+/* ============================================
+   FEATURED FILTER
+   ============================================ */
 export const featuredFilter = {
   id: "featured",
   name: "Produk Unggulan",
@@ -120,6 +142,9 @@ export const featuredFilter = {
   count: products.filter((p) => p.featured).length,
 };
 
+/* ============================================
+   SORT OPTIONS
+   ============================================ */
 export const sortOptions = [
   { id: "price-asc", name: "Harga Terendah", icon: "⬆" },
   { id: "price-desc", name: "Harga Tertinggi", icon: "⬇" },
@@ -129,6 +154,9 @@ export const sortOptions = [
   { id: "featured", name: "Unggulan", icon: "" },
 ];
 
+/* ============================================
+   PRICE STATISTICS
+   ============================================ */
 export const priceStats = {
   min: Math.min(...products.map((p) => p.price)),
   max: Math.max(...products.map((p) => p.price)),
@@ -137,6 +165,9 @@ export const priceStats = {
   ),
 };
 
+/* ============================================
+   GET ALL FILTER VALUES
+   ============================================ */
 export function getAllFilterValues() {
   return {
     categories,

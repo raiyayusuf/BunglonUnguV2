@@ -1,12 +1,16 @@
-// components/ecommerce/product-card.tsx:
+/* 
+  components/ecommerce/product-card.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
 import { Product } from "@/lib/data/products";
+import { addToCart, formatPrice, getCart } from "@/lib/services/cart-service";
 import Image from "next/image";
-import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { addToCart, getCart, formatPrice } from "@/lib/services/cart-service";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -16,6 +20,10 @@ interface ProductCardProps {
   compact?: boolean;
   onAddToCart?: (productId: number) => void;
 }
+
+/* ============================================
+   PRODUCT CARD COMPONENT
+   ============================================ */
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
@@ -30,14 +38,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [cartQuantity, setCartQuantity] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  // ========== FIX: REF untuk track click ==========
+  /* ============================================
+     REFS & MEMOS
+     ============================================ */
+
+  // Refs untuk track click
   const isAddingRef = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // FIX: Gunakan useMemo untuk stable review count
+  // Stable review count
   const reviewCount = useMemo(() => {
-    return ((product.id * 17) % 50) + 15; // Deterministic
+    return ((product.id * 17) % 50) + 15;
   }, [product.id]);
+
+  /* ============================================
+     EFFECTS
+     ============================================ */
 
   // Load cart quantity untuk produk ini
   useEffect(() => {
@@ -60,6 +76,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
     };
   }, []);
+
+  /* ============================================
+     UTILITY FUNCTIONS
+     ============================================ */
 
   // Color mapping untuk chips
   const getColorCode = (colorName: string): string => {
@@ -97,60 +117,60 @@ const ProductCard: React.FC<ProductCardProps> = ({
     mixed: "Campuran",
   };
 
-  // ========== FIX ULTIMATE: Single item addition dengan LOCK ==========
+  /* ============================================
+     EVENT HANDLERS
+     ============================================ */
+
+  // Add to cart handler dengan LOCK
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // PREVENT MULTIPLE CLICKS
+    // Prevent multiple clicks
     if (isAddingRef.current || isAdded || !product.inStock) {
-      console.log(
-        `🛑 [ProductCard ${product.id}] Click blocked - already adding`,
-      );
       return;
     }
 
-    console.log(`🎯 [ProductCard ${product.id}] Starting add to cart process`);
-
-    // SET LOCK
+    // Set lock
     isAddingRef.current = true;
 
-    // Add ke cart dengan quantity 1 - HANYA 1x
+    // Add ke cart dengan quantity 1
     const success = addToCart(product, 1);
 
     if (success) {
-      console.log(`✅ [ProductCard ${product.id}] Successfully added to cart`);
       setIsAdded(true);
 
-      // Trigger parent callback JIKA ADA (hanya untuk notification)
+      // Trigger parent callback jika ada
       if (onAddToCart) {
         onAddToCart(product.id);
       }
 
-      // Reset button setelah 1.5 detik
+      // Reset timeout
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
       }
 
       clickTimeoutRef.current = setTimeout(() => {
         setIsAdded(false);
-        console.log(`🔄 [ProductCard ${product.id}] Button reset`);
       }, 1500);
     }
 
-    // UNLOCK setelah 500ms (prevent rapid clicks)
+    // Unlock setelah 500ms
     setTimeout(() => {
       isAddingRef.current = false;
-      console.log(`🔓 [ProductCard ${product.id}] Button unlocked`);
     }, 500);
   };
 
-  // ========== FIX: Quick view (eye icon) ==========
+  // Quick view handler
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     router.push(`/products/${product.id}`);
   };
+
+  /* ============================================
+     COMPACT VERSION
+     ============================================ */
 
   if (compact) {
     return (
@@ -188,13 +208,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
     );
   }
 
+  /* ============================================
+     FULL VERSION
+     ============================================ */
   return (
     <div
       className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-100 flex flex-col h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Container */}
+      {/* IMAGE CONTAINER */}
       <Link href={`/products/${product.id}`} className="block relative">
         <div className="relative h-48 md:h-56 overflow-hidden">
           <Image
@@ -205,7 +228,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
-          {/* Badges */}
+          {/* BADGES */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {product.featured && (
               <span className="bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
@@ -219,14 +242,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          {/* Stock Status */}
+          {/* STOCK STATUS */}
           {!product.inStock && (
             <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
               🔴 Habis
             </div>
           )}
 
-          {/* ========== FIX: Quick View Button (Eye Icon) ========== */}
+          {/* QUICK VIEW BUTTON */}
           {isHovered && (
             <button
               onClick={handleQuickView}
@@ -237,7 +260,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </button>
           )}
 
-          {/* Cart Quantity Badge */}
+          {/* CART QUANTITY BADGE */}
           {cartQuantity > 0 && (
             <div className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
               {cartQuantity}
@@ -246,7 +269,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </Link>
 
-      {/* Product Info */}
+      {/* PRODUCT INFO */}
       <div className="p-4 flex-1 flex flex-col">
         <Link href={`/products/${product.id}`} className="group/link">
           <h3 className="font-bold text-gray-800 mb-2 line-clamp-1 group-hover/link:text-primary transition-colors">
@@ -260,7 +283,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </Link>
 
-        {/* Meta Info */}
+        {/* META INFO */}
         <div className="mb-4 space-y-2 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-500">Jenis:</span>
@@ -302,7 +325,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {/* Price & Actions */}
+        {/* PRICE & ACTIONS */}
         <div className="pt-4 border-t border-gray-100">
           <div className="flex justify-between items-center mb-3">
             <div>
@@ -328,7 +351,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               Detail
             </Link>
 
-            {/* ========== FIXED ULTIMATE: Add to Cart Button ========== */}
+            {/* ADD TO CART BUTTON */}
             <button
               onClick={handleAddToCart}
               disabled={isAdded || !product.inStock}

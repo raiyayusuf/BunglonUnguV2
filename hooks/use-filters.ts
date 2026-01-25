@@ -1,12 +1,22 @@
-// hooks\useFilters.ts:
+/* 
+  hooks/useFilters.ts
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { FilterState } from "@/lib/types/filter";
 import { SortOption } from "@/lib/types/product";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+/* ============================================
+   MAIN HOOK
+   ============================================ */
 export function useFilters() {
+  /* ============================================
+     HOOKS & STATE
+     ============================================ */
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -24,7 +34,9 @@ export function useFilters() {
 
   const [sortBy, setSortBy] = useState<SortOption>("featured");
 
-  // Parse URL parameters ke filters
+  /* ============================================
+     URL PARSING EFFECT
+     ============================================ */
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const newFilters: Partial<FilterState> = {};
@@ -93,7 +105,9 @@ export function useFilters() {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   }, [searchParams]);
 
-  // Update URL dengan filters
+  /* ============================================
+     URL UPDATE FUNCTION
+     ============================================ */
   const updateURL = useCallback(
     (newFilters: FilterState, newSort: SortOption) => {
       const params = new URLSearchParams();
@@ -125,6 +139,9 @@ export function useFilters() {
     [router, pathname],
   );
 
+  /* ============================================
+     FILTER ACTIONS
+     ============================================ */
   const updateFilter = useCallback(
     (key: keyof FilterState, value: any) => {
       setFilters((prev) => {
@@ -158,14 +175,15 @@ export function useFilters() {
     setFilters(defaultFilters);
     setSortBy("featured");
 
-    // Clear URL parameters
     router.push(pathname, { scroll: false });
   }, [router, pathname]);
 
-  // Active filters count untuk badge
+  /* ============================================
+     ACTIVE FILTERS COUNT
+     ============================================ */
   const activeFilterCount = useMemo(() => {
     return Object.entries(filters).reduce((count, [key, value]) => {
-      if (key === "inStockOnly" && value === true) return count; // Skip default
+      if (key === "inStockOnly" && value === true) return count;
       if (Array.isArray(value) && value.length > 0) return count + value.length;
       if (value && !Array.isArray(value)) {
         if (key === "priceRange") return count + 1;
@@ -176,6 +194,9 @@ export function useFilters() {
     }, 0);
   }, [filters]);
 
+  /* ============================================
+     RETURN VALUES
+     ============================================ */
   return {
     filters,
     sortBy,

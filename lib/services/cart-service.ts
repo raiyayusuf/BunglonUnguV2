@@ -1,7 +1,13 @@
-// lib/services/cart-service.ts:
+/* 
+  lib/services/cart-service.ts
+  Organized by: raiyayusuf
+*/
+
 import { Product } from "@/lib/data/products";
 
-// ===== TYPES =====
+/* ============================================
+   INTERFACES
+   ============================================ */
 export interface CartItem {
   id: number;
   name: string;
@@ -13,10 +19,14 @@ export interface CartItem {
   addedAt: Date;
 }
 
-// ===== CONSTANTS =====
+/* ============================================
+   CONSTANTS
+   ============================================ */
 const CART_STORAGE_KEY = "bakule_kembang_cart_v2";
 
-// ===== UTILITIES =====
+/* ============================================
+   STORAGE FUNCTIONS
+   ============================================ */
 function getCartFromStorage(): CartItem[] {
   if (typeof window === "undefined") return [];
 
@@ -46,7 +56,9 @@ function saveCartToStorage(cart: CartItem[]): void {
   }
 }
 
-// ===== FIX: Better event dispatch =====
+/* ============================================
+   EVENT DISPATCH MANAGEMENT
+   ============================================ */
 let updateTimeout: NodeJS.Timeout | null = null;
 
 function updateCartUI(): void {
@@ -59,7 +71,9 @@ function updateCartUI(): void {
   }, 50);
 }
 
-// ===== CORE CART FUNCTIONS =====
+/* ============================================
+   CART ACTIONS
+   ============================================ */
 export function addToCart(product: Product, quantity: number = 1): boolean {
   console.log(
     `🛒 [CART SERVICE] addToCart - ID: ${product.id}, Qty: ${quantity}`,
@@ -68,14 +82,11 @@ export function addToCart(product: Product, quantity: number = 1): boolean {
   const cart = getCartFromStorage();
   const existingItemIndex = cart.findIndex((item) => item.id === product.id);
 
-  // ========== FIX: Prevent duplicate addition ==========
   if (existingItemIndex >= 0) {
-    // Update existing item
     cart[existingItemIndex].quantity += quantity;
     cart[existingItemIndex].addedAt = new Date();
     console.log(`📈 Updated quantity to: ${cart[existingItemIndex].quantity}`);
   } else {
-    // Add new item - FIX: Add only once
     cart.push({
       id: product.id,
       name: product.name,
@@ -134,7 +145,9 @@ export function clearCart(): boolean {
   return true;
 }
 
-// ===== GETTER FUNCTIONS =====
+/* ============================================
+   CART GETTERS
+   ============================================ */
 export function getCart(): CartItem[] {
   return getCartFromStorage();
 }
@@ -159,7 +172,9 @@ export function isInCart(productId: number): boolean {
   return cart.some((item) => item.id === productId);
 }
 
-// ===== FORMATTING =====
+/* ============================================
+   FORMATTING FUNCTIONS
+   ============================================ */
 export function formatPrice(price: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -168,9 +183,10 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
-// ===== INITIAL SETUP =====
+/* ============================================
+   INITIALIZATION
+   ============================================ */
 if (typeof window !== "undefined") {
-  // Initialize cart on load
   setTimeout(() => {
     updateCartUI();
   }, 100);

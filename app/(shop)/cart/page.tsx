@@ -1,28 +1,37 @@
-// app/(shop)/cart/page.tsx
+/* 
+  app/(shop)/cart/page.tsx
+  Organized by: raiyayusuf
+*/
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import {
+  clearCart,
+  formatPrice,
   getCart,
   getCartTotal,
   removeFromCart,
   updateQuantity,
-  clearCart,
-  formatPrice,
 } from "@/lib/services/cart-service";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+/* ============================================
+   CART PAGE COMPONENT
+   ============================================ */
 
 export default function CartPage() {
+  const router = useRouter();
   const [cartItems, setCartItems] = useState(getCart());
   const [total, setTotal] = useState(getCartTotal());
   const [isLoading, setIsLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const router = useRouter();
 
-  // Update cart data
+  /* ============================================
+     CART DATA UPDATES
+     ============================================ */
   useEffect(() => {
     const updateCartData = () => {
       setCartItems(getCart());
@@ -34,10 +43,16 @@ export default function CartPage() {
     return () => window.removeEventListener("cartUpdated", updateCartData);
   }, []);
 
-  // Select all items on page load
+  /* ============================================
+     INITIAL SELECTION
+     ============================================ */
   useEffect(() => {
     setSelectedItems(cartItems.map((item) => item.id));
   }, [cartItems]);
+
+  /* ============================================
+     CART ACTIONS HANDLERS
+     ============================================ */
 
   // Handle quantity change
   const handleQuantityChange = (productId: number, newQuantity: number) => {
@@ -77,7 +92,6 @@ export default function CartPage() {
 
     setIsLoading(true);
 
-    // Simpan selected items untuk checkout
     if (selectedItems.length > 0) {
       localStorage.setItem(
         "selected_checkout_items",
@@ -85,11 +99,14 @@ export default function CartPage() {
       );
     }
 
-    // Redirect ke checkout page
     setTimeout(() => {
       router.push("/checkout");
     }, 500);
   };
+
+  /* ============================================
+     SELECTION HANDLERS
+     ============================================ */
 
   // Toggle select item
   const toggleSelectItem = (productId: number) => {
@@ -109,6 +126,10 @@ export default function CartPage() {
     }
   };
 
+  /* ============================================
+     CALCULATIONS
+     ============================================ */
+
   // Calculate selected items total
   const selectedTotal = cartItems
     .filter((item) => selectedItems.includes(item.id))
@@ -117,14 +138,17 @@ export default function CartPage() {
   // Get cart count
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Calculate shipping (gratis > 100k)
+  // Calculate shipping (free > 100k)
   const shippingCost = selectedTotal > 100000 ? 0 : 15000;
   const finalTotal = selectedTotal + shippingCost;
 
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
-        {/* Breadcrumb */}
+        /* BREADCRUMB NAVIGATION */
         <nav className="mb-8">
           <ol className="flex items-center text-sm text-gray-600">
             <li>
@@ -145,8 +169,7 @@ export default function CartPage() {
             <li className="font-medium text-gray-800">Keranjang</li>
           </ol>
         </nav>
-
-        {/* Page Header */}
+        /* PAGE HEADER */
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Keranjang Belanja
@@ -155,9 +178,8 @@ export default function CartPage() {
             {cartCount} {cartCount === 1 ? "produk" : "produk"} dalam keranjang
           </p>
         </div>
-
         {cartItems.length === 0 ? (
-          // Empty cart state
+          /* EMPTY CART STATE */
           <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -201,9 +223,9 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Cart Items */}
+            /* LEFT COLUMN - CART ITEMS */
             <div className="lg:col-span-2">
-              {/* Cart Header */}
+              /* CART HEADER */
               <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -243,8 +265,7 @@ export default function CartPage() {
                   </button>
                 </div>
               </div>
-
-              {/* Cart Items List */}
+              /* CART ITEMS LIST */
               <div className="space-y-4">
                 {cartItems.map((item) => (
                   <div
@@ -252,7 +273,7 @@ export default function CartPage() {
                     className="bg-white rounded-2xl shadow-lg p-6"
                   >
                     <div className="flex flex-col sm:flex-row gap-6">
-                      {/* Selection Checkbox */}
+                      /* SELECTION CHECKBOX */
                       <div className="flex items-start">
                         <input
                           type="checkbox"
@@ -261,8 +282,7 @@ export default function CartPage() {
                           className="w-5 h-5 text-primary rounded focus:ring-primary mt-1"
                         />
                       </div>
-
-                      {/* Product Image */}
+                      /* PRODUCT IMAGE */
                       <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
                         <Image
                           src={item.image}
@@ -272,8 +292,7 @@ export default function CartPage() {
                           sizes="96px"
                         />
                       </div>
-
-                      {/* Product Info */}
+                      /* PRODUCT INFO */
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                           <div className="flex-1">
@@ -293,8 +312,7 @@ export default function CartPage() {
                               </span>
                             </div>
                           </div>
-
-                          {/* Quantity Controls */}
+                          /* QUANTITY CONTROLS */
                           <div className="flex flex-col items-end gap-4">
                             <div className="flex items-center gap-2">
                               <button
@@ -357,8 +375,7 @@ export default function CartPage() {
                             </div>
                           </div>
                         </div>
-
-                        {/* Actions */}
+                        /* ACTIONS */
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                           <button
                             onClick={() => handleRemoveItem(item.id)}
@@ -411,11 +428,10 @@ export default function CartPage() {
                 ))}
               </div>
             </div>
-
-            {/* Right Column - Summary */}
+            /* RIGHT COLUMN - SUMMARY */
             <div className="lg:col-span-1">
               <div className="sticky top-8">
-                {/* Order Summary */}
+                /* ORDER SUMMARY */
                 <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
                   <h2 className="text-xl font-bold text-gray-800 mb-6">
                     Ringkasan Pesanan
@@ -526,8 +542,7 @@ export default function CartPage() {
                     </p>
                   </div>
                 </div>
-
-                {/* Promo Banner */}
+                /* PROMO BANNER */
                 <div className="bg-gradient-to-br from-primary-dark to-primary text-white rounded-2xl p-6">
                   <h3 className="font-bold text-lg mb-2">
                     🎁 Dapatkan Promo Spesial!

@@ -1,18 +1,35 @@
-// app/(marketing)/page.tsx
+/* 
+  app/(marketing)/page.tsx
+  Organized by: raiyayusuf
+*/
+
 import FeaturedProductsSection from "@/components/sections/featured-products-section";
 import { getFeaturedProducts } from "@/lib/data/products";
-import { getRecentTestimonials } from "@/lib/data/testimonials"; // ← Import dari testimonials
+import { getRecentTestimonials } from "@/lib/data/testimonials";
+
+/* ============================================
+   HOME PAGE COMPONENT
+   ============================================ */
 
 export default function HomePage() {
+  /* ============================================
+     DATA FETCHING
+     ============================================ */
   const featuredProducts = getFeaturedProducts();
-  const recentTestimonials = getRecentTestimonials(3); // ← Ambil 3 testimoni terbaru
+  const recentTestimonials = getRecentTestimonials(3);
 
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary-soft to-white">
-      {/* 1. Hero Section */}
+      {/* ============================================
+         1. HERO SECTION
+         ============================================ */}
       <section className="py-20 md:py-28 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* HERO TEXT CONTENT */}
             <div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-dark mb-6">
                 Keindahan dalam Setiap Kelopak
@@ -21,6 +38,8 @@ export default function HomePage() {
                 Bakule Kembang menghadirkan buket bunga segar dengan sentuhan
                 tradisional dan modern untuk setiap momen spesial Anda.
               </p>
+
+              {/* HERO BUTTONS */}
               <div className="flex flex-wrap gap-4">
                 <a
                   href="/products"
@@ -62,6 +81,8 @@ export default function HomePage() {
                 </a>
               </div>
             </div>
+
+            {/* HERO VISUAL */}
             <div className="bg-gradient-to-br from-primary-light to-primary rounded-2xl h-64 md:h-80 flex items-center justify-center">
               <div className="text-center text-white p-8">
                 <div className="text-6xl mb-4 animate-pulse">🌸</div>
@@ -75,12 +96,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2. Features Section */}
+      {/* ============================================
+         2. FEATURES SECTION
+         ============================================ */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl font-bold text-center text-primary-dark mb-12">
             Mengapa Memilih Kami?
           </h2>
+
+          {/* FEATURES GRID */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
@@ -125,7 +150,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Featured Products Section (Include Grid + Running Slider) */}
+      {/* ============================================
+         3. FEATURED PRODUCTS SECTION
+         ============================================ */}
       <FeaturedProductsSection
         products={featuredProducts}
         title="🌺 Produk Unggulan"
@@ -134,9 +161,12 @@ export default function HomePage() {
         showViewAll={true}
       />
 
-      {/* 4. Testimonials - UPDATED untuk pake data asli */}
+      {/* ============================================
+         4. TESTIMONIALS SECTION
+         ============================================ */}
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-6xl">
+          {/* TESTIMONIALS HEADER */}
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary-dark mb-4">
               💬 Testimoni Pelanggan
@@ -147,6 +177,7 @@ export default function HomePage() {
             </p>
           </div>
 
+          {/* TESTIMONIALS GRID */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentTestimonials.map((testimonial) => (
               <div
@@ -178,11 +209,11 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Link ke halaman testimonials lengkap (jika ada) */}
+          {/* VIEW MORE LINK */}
           {recentTestimonials.length > 0 && (
             <div className="text-center mt-12">
               <a
-                href="/testimonials" // atau route yang sesuai
+                href="/testimonials"
                 className="inline-flex items-center text-primary hover:text-primary-dark font-medium gap-1"
               >
                 Lihat lebih banyak testimoni
@@ -205,9 +236,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. CTA */}
+      {/* ============================================
+         5. CALL TO ACTION SECTION
+         ============================================ */}
       <section className="py-16 px-4 bg-gradient-to-r from-primary-dark to-primary">
         <div className="container mx-auto max-w-6xl text-center">
+          {/* CTA HEADER */}
           <h2 className="text-3xl font-bold text-white mb-4">
             Siap Memberikan Kebahagiaan?
           </h2>
@@ -215,6 +249,8 @@ export default function HomePage() {
             Pesan sekarang dan dapatkan bunga segar dengan kualitas terbaik
             untuk orang tersayang
           </p>
+
+          {/* CTA BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/products"

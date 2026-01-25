@@ -1,14 +1,18 @@
-// components\ecommerce\filter-sidebar.tsx:
+/* 
+  components/ecommerce/filter-sidebar.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { FilterState } from "@/lib/types/filter";
 import {
   categories,
+  colors as colorData,
   flowerTypes,
   priceRanges,
-  colors as colorData,
 } from "@/lib/data/categories";
+import { FilterState } from "@/lib/types/filter";
+import { useEffect, useRef, useState } from "react";
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -16,16 +20,28 @@ interface FilterSidebarProps {
   onReset: () => void;
 }
 
+/* ============================================
+   FILTER SIDEBAR COMPONENT
+   ============================================ */
+
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
   filters,
   onFilterChange,
   onReset,
 }) => {
+  /* ============================================
+     STATE MANAGEMENT
+     ============================================ */
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  /* ============================================
+     UTILITY FUNCTIONS
+     ============================================ */
+
+  // Get color code from name
   const getColorCode = (colorName: string): string => {
     const colorMap: Record<string, string> = {
       Merah: "#ff4757",
@@ -43,11 +59,15 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     return colorMap[colorName] || "#dfe6e9";
   };
 
-  // Handle hover dengan delay
+  /* ============================================
+     HOVER HANDLERS
+     ============================================ */
+
+  // Handle hover with delay
   const handleMouseEnter = (section: string) => {
     if (hoverTimeout) clearTimeout(hoverTimeout);
 
-    // Immediate feedback untuk arrow
+    // Immediate feedback for arrow
     if (expandedSection !== section) {
       const arrowElement = document.querySelector(
         `[data-section="${section}"] svg`,
@@ -59,7 +79,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
     const timeout = setTimeout(() => {
       setExpandedSection(section);
-    }, 120); // Optimal untuk hover
+    }, 120);
 
     setHoverTimeout(timeout);
   };
@@ -80,14 +100,14 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             arrowElement.classList.remove("rotate-180");
           }
 
-          // Add exit animation class sebelum remove
+          // Add exit animation class before remove
           const dropdownElement =
             sectionElement.querySelector(".filter-content");
           if (dropdownElement) {
             dropdownElement.classList.add("filter-dropdown-exit");
             setTimeout(() => {
               setExpandedSection(null);
-            }, 500); // Match animation duration
+            }, 500);
           } else {
             setExpandedSection(null);
           }
@@ -98,15 +118,18 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     setHoverTimeout(timeout);
   };
 
-  // Handle click untuk toggle manual (mobile/fallback)
+  // Handle click for manual toggle (mobile/fallback)
   const handleSectionClick = (section: string) => {
     if (window.innerWidth < 768) {
-      // Mobile
       setExpandedSection(expandedSection === section ? null : section);
     }
   };
 
-  // Close semua saat klik Reset
+  /* ============================================
+     EFFECTS
+     ============================================ */
+
+  // Close all when Reset
   useEffect(() => {
     if (
       filters.category.length === 0 &&
@@ -127,7 +150,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     };
   }, [hoverTimeout]);
 
-  // Hitung total item per section
+  /* ============================================
+     COUNT FUNCTIONS
+     ============================================ */
+
+  // Calculate total items per section
   const getCategoryCount = () => {
     return categories.filter((cat) => filters.category.includes(cat.id)).length;
   };
@@ -146,14 +173,21 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     return filters.colors.length;
   };
 
-  // Set ref untuk setiap section
+  /* ============================================
+     REF SETTER
+     ============================================ */
+
+  // Set ref for each section
   const setSectionRef = (section: string, el: HTMLDivElement | null) => {
     sectionRefs.current[section] = el;
   };
 
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-4">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center border-b pb-4 mb-4">
         <h2 className="text-xl font-bold text-gray-800">Filter Produk</h2>
         <button
@@ -164,7 +198,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </button>
       </div>
 
-      {/* Search */}
+      {/* SEARCH SECTION */}
       <div className="mb-6">
         <h3 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
           <svg
@@ -191,7 +225,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         />
       </div>
 
-      {/* ========== KATEGORI - HOVER ACCORDION ========== */}
+      {/* ============================================
+          CATEGORY SECTION - HOVER ACCORDION
+          ============================================ */}
       <div
         ref={(el) => setSectionRef("category", el)}
         className="border border-gray-200 rounded-lg overflow-hidden hover:border-primary/50 transition-colors"
@@ -293,7 +329,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         )}
       </div>
 
-      {/* ========== JENIS BUNGA - HOVER ACCORDION ========== */}
+      {/* ============================================
+          FLOWER TYPE SECTION - HOVER ACCORDION
+          ============================================ */}
       <div
         ref={(el) => setSectionRef("flower-type", el)}
         className="border border-gray-200 rounded-lg overflow-hidden hover:border-emerald-500/50 transition-colors"
@@ -395,7 +433,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         )}
       </div>
 
-      {/* ========== HARGA - HOVER ACCORDION ========== */}
+      {/* ============================================
+          PRICE SECTION - HOVER ACCORDION
+          ============================================ */}
       <div
         ref={(el) => setSectionRef("price", el)}
         className="border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
@@ -494,7 +534,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         )}
       </div>
 
-      {/* ========== WARNA - HOVER ACCORDION ========== */}
+      {/* ============================================
+          COLOR SECTION - HOVER ACCORDION
+          ============================================ */}
       <div
         ref={(el) => setSectionRef("color", el)}
         className="border border-gray-200 rounded-lg overflow-hidden hover:border-purple-500/50 transition-colors"
@@ -613,7 +655,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         )}
       </div>
 
-      {/* ========== FEATURED & IN STOCK ========== */}
+      {/* ============================================
+          FEATURED & IN STOCK SECTION
+          ============================================ */}
       <div className="border border-gray-200 rounded-lg p-4 space-y-3 hover:border-gray-300 transition-colors">
         <label className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors group">
           <input
@@ -640,7 +684,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </label>
       </div>
 
-      {/* Active Filters Summary */}
+      {/* ============================================
+          ACTIVE FILTERS SUMMARY
+          ============================================ */}
       {(getCategoryCount() > 0 ||
         getFlowerTypeCount() > 0 ||
         getPriceRangeCount() > 0 ||

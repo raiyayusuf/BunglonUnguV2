@@ -1,21 +1,28 @@
-// app/(shop)/categories/page.tsx:
+/* 
+  app/(shop)/categories/page.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
-import { useRouter } from "next/navigation";
+import ProductCard from "@/components/ecommerce/product-card";
 import {
   categories,
+  colors,
+  featuredFilter,
   flowerTypes,
   priceRanges,
-  featuredFilter,
-  colors,
   tags,
 } from "@/lib/data/categories";
 import { products } from "@/lib/data/products";
-import { Product } from "@/lib/data/products";
-import ProductCard from "@/components/ecommerce/product-card";
-import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
-// Category card component
+/* ============================================
+   INTERFACE DEFINITIONS
+   ============================================ */
+
+// Category card props interface
 interface CategoryCardProps {
   icon: string;
   title: string;
@@ -24,6 +31,10 @@ interface CategoryCardProps {
   onClick: () => void;
   color?: string;
 }
+
+/* ============================================
+   CATEGORY CARD COMPONENT
+   ============================================ */
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
   icon,
@@ -77,8 +88,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   );
 };
 
-// Featured products section
-const FeaturedProducts = () => {
+/* ============================================
+   FEATURED PRODUCTS COMPONENT
+   ============================================ */
+
+function FeaturedProducts() {
   const featured = useMemo(
     () => products.filter((p) => p.featured).slice(0, 4),
     [],
@@ -114,13 +128,17 @@ const FeaturedProducts = () => {
       </div>
     </div>
   );
-};
+}
 
-// Color tags component
-const ColorTags = () => {
+/* ============================================
+   COLOR TAGS COMPONENT
+   ============================================ */
+
+function ColorTags() {
   const router = useRouter();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
+  // Get color code from name
   const getColorCode = (colorName: string): string => {
     const colorMap: Record<string, string> = {
       Merah: "#ff4757",
@@ -138,6 +156,7 @@ const ColorTags = () => {
     return colorMap[colorName] || "#dfe6e9";
   };
 
+  // Handle color selection
   const handleColorClick = (colorName: string) => {
     setSelectedColor(colorName === selectedColor ? null : colorName);
     router.push(`/products?colors=${colorName}`);
@@ -177,21 +196,30 @@ const ColorTags = () => {
       </div>
     </div>
   );
-};
+}
 
-// Main Categories Page
+/* ============================================
+   MAIN CATEGORIES PAGE COMPONENT
+   ============================================ */
+
 export default function CategoriesPage() {
   const router = useRouter();
 
-  // Navigation handlers
+  /* ============================================
+     NAVIGATION HANDLERS
+     ============================================ */
+
+  // Category click handler
   const handleCategoryClick = (categoryId: string) => {
     router.push(`/products?category=${categoryId}`);
   };
 
+  // Flower type click handler
   const handleFlowerTypeClick = (flowerTypeId: string) => {
     router.push(`/products?flowerType=${flowerTypeId}`);
   };
 
+  // Price range click handler
   const handlePriceRangeClick = (rangeId: string) => {
     const range = priceRanges.find((r) => r.id === rangeId);
     if (range) {
@@ -199,20 +227,29 @@ export default function CategoriesPage() {
     }
   };
 
+  // All products click handler
   const handleAllProductsClick = () => {
     router.push("/products");
   };
 
+  // Featured products click handler
   const handleFeaturedClick = () => {
     router.push("/products?featured=true");
   };
 
+  /* ============================================
+     DATA CALCULATIONS
+     ============================================ */
+
   // Calculate total products
   const totalProducts = products.length;
 
+  /* ============================================
+     RENDER COMPONENT
+     ============================================ */
   return (
     <div className="py-8">
-      {/* Hero Section */}
+      /* HERO SECTION */
       <div className="text-center mb-16">
         <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary-light/10 px-6 py-2 rounded-full mb-4">
           <i className="fas fa-tags text-primary"></i>
@@ -247,8 +284,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-
-      {/* Quick Links */}
+      /* QUICK LINKS SECTION */
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
         <div
           onClick={handleAllProductsClick}
@@ -286,8 +322,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       </div>
-
-      {/* Packaging Categories */}
+      /* PACKAGING CATEGORIES SECTION */
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -314,8 +349,7 @@ export default function CategoriesPage() {
           })}
         </div>
       </div>
-
-      {/* Flower Types */}
+      /* FLOWER TYPES SECTION */
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -348,8 +382,7 @@ export default function CategoriesPage() {
           })}
         </div>
       </div>
-
-      {/* Price Ranges */}
+      /* PRICE RANGES SECTION */
       <div className="mb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
@@ -407,14 +440,11 @@ export default function CategoriesPage() {
           ))}
         </div>
       </div>
-
-      {/* Color Tags */}
+      /* COLOR TAGS SECTION */
       <ColorTags />
-
-      {/* Featured Products */}
+      /* FEATURED PRODUCTS SECTION */
       <FeaturedProducts />
-
-      {/* Popular Tags */}
+      /* POPULAR TAGS SECTION */
       <div className="mb-16">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
           <i className="fas fa-hashtag text-primary"></i>
@@ -433,8 +463,7 @@ export default function CategoriesPage() {
           ))}
         </div>
       </div>
-
-      {/* CTA Section */}
+      /* CTA SECTION */
       <div className="bg-gradient-to-r from-primary to-primary-dark rounded-3xl p-8 md:p-12 text-white text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Butuh Bantuan Memilih?</h2>

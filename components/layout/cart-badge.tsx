@@ -1,8 +1,16 @@
-// components/layout/cartBadge.tsx
+/* 
+  components/layout/cart-badge.tsx
+  Organized by: raiyayusuf
+*/
+
 "use client";
 
 import { useCart } from "@/hooks/use-cart";
 import Link from "next/link";
+
+/* ============================================
+   CART BADGE COMPONENT
+   ============================================ */
 
 export default function CartBadge() {
   const { totalQuantity } = useCart();

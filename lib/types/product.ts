@@ -1,5 +1,12 @@
-// lib\types\product.ts:
-// Update interface Product yang udah ada dengan menambahkan:
+/* 
+  lib\types\product.ts
+  Organized by: raiyayusuf
+*/
+
+/* ============================================
+   PRODUCT INTERFACE
+   ============================================ */
+
 export interface Product {
   id: number;
   name: string;
@@ -20,6 +27,10 @@ export interface Product {
   freshness?: string;
   reviewCount?: number;
 }
+
+/* ============================================
+   SORT OPTION TYPE
+   ============================================ */
 
 export type SortOption =
   | "price-asc"

@@ -1,29 +1,38 @@
-// components/layout/navbar.tsx
+/* 
+  components/layout/navbar.tsx
+  Organized by: raiyayusuf
+*/
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-// PROPS INTERFACE HARUS ADA!
+/* ============================================
+   PROPS INTERFACE
+   ============================================ */
 interface NavbarProps {
   cartCount: number;
   onCartClick: () => void;
 }
 
 export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
+  /* ============================================
+     STATE & REFS
+     ============================================ */
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileRotation, setMobileRotation] = useState(0);
   const pathname = usePathname();
 
-  // Refs untuk detect click outside
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Scroll effect
+  /* ============================================
+     EFFECTS
+     ============================================ */
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -32,7 +41,6 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Click outside handler untuk mobile menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -50,7 +58,9 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // Handle mobile hamburger click
+  /* ============================================
+     FUNCTIONS
+     ============================================ */
   const handleMobileHamburgerClick = () => {
     const newState = !isMobileMenuOpen;
     setIsMobileMenuOpen(newState);
@@ -66,7 +76,6 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
     { href: "/contact", label: "Kontak", icon: "fa-phone" },
   ];
 
-  // Check if link is active
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname?.startsWith(href);
@@ -75,7 +84,9 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
   return (
     <nav className="font-poppins sticky top-0 z-50 bg-gradient-to-br from-primary-dark to-primary py-4 shadow-bunglon">
       <div className="max-w-[1500px] mx-auto px-4 md:px-10 flex justify-between items-center">
-        {/* Desktop: Logo tetap selalu */}
+        {/* ============================================
+           DESKTOP LOGO
+           ============================================ */}
         <div className="hidden md:flex items-center">
           <Link href="/" className="flex items-center justify-center">
             <Image
@@ -89,9 +100,10 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
           </Link>
         </div>
 
-        {/* Mobile: Logo saat belum scroll, Text saat scroll */}
+        {/* ============================================
+           MOBILE LOGO
+           ============================================ */}
         <div className="md:hidden flex items-center gap-3">
-          {/* Logo saat normal (belum scroll) */}
           <Link
             href="/"
             className={`transition-all duration-300 ${
@@ -108,7 +120,6 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
             />
           </Link>
 
-          {/* Text saat scroll */}
           <div
             className={`${
               isScrolled ? "flex flex-col" : "hidden"
@@ -126,7 +137,9 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
           </div>
         </div>
 
-        {/* DESKTOP NAVIGATION - SELALU TAMPIL 6 ITEMS */}
+        {/* ============================================
+           DESKTOP NAVIGATION
+           ============================================ */}
         <ul className="hidden md:flex list-none gap-4 items-center m-0 p-0">
           {navLinks.map((link) => {
             const active = isActive(link.href);
@@ -145,18 +158,14 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
                     overflow-hidden
                   `}
                 >
-                  {/* Animated gradient overlay */}
                   <div className="absolute inset-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/15 to-transparent group-hover:left-full transition-all duration-500"></div>
 
-                  {/* Text saja, tanpa icon */}
                   <span className="relative z-10 font-medium">
                     {link.label}
                   </span>
 
-                  {/* Hover effect */}
                   <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 rounded-bunglon transition-all duration-300"></div>
 
-                  {/* Active indicator */}
                   {active && (
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-primary-light rounded-full"></div>
                   )}
@@ -166,18 +175,18 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
           })}
         </ul>
 
-        {/* Cart & Actions */}
+        {/* ============================================
+           CART & ACTIONS
+           ============================================ */}
         <div className="flex items-center gap-3">
-          {/* Cart Button - PAKAI PROPS onCartClick */}
           <button
             className="bg-gradient-to-br from-primary-light to-primary text-primary-dark border-none px-4 py-2.5 rounded-bunglon font-semibold cursor-pointer flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl active:scale-95 relative"
-            onClick={onCartClick} // ← INI PAKAI PROPS!
+            onClick={onCartClick}
             aria-label="Open cart"
           >
             <i className="fas fa-shopping-cart"></i>
             <span className="hidden md:inline">Cart</span>
 
-            {/* Cart Count Badge - PAKAI PROPS cartCount */}
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-primary-dark text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md animate-pulse">
                 {cartCount}
@@ -185,7 +194,6 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
             )}
           </button>
 
-          {/* Mobile Hamburger - HANYA UNTUK MOBILE */}
           <button
             ref={mobileButtonRef}
             className="md:hidden text-white text-lg cursor-pointer p-2 hover:scale-110 transition-all duration-300"
@@ -202,7 +210,9 @@ export default function Navbar({ cartCount, onCartClick }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile Menu - HANYA UNTUK MOBILE */}
+      {/* ============================================
+         MOBILE MENU
+         ============================================ */}
       <div
         ref={mobileMenuRef}
         className={`md:hidden fixed top-16 left-0 w-full bg-primary-dark backdrop-blur-sm z-40 py-2 shadow-xl transition-all duration-300 ease-out transform origin-top ${
